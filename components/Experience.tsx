@@ -193,95 +193,82 @@ function ExpCardContent({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        padding: '28px 32px',
-        background: isDark ? 'var(--bg)' : '#ffffff',
-        border: `1px solid ${hovered ? `${exp.color}40` : 'var(--border)'}`,
+        padding: '24px 28px',
+        background: isDark ? 'rgba(14,14,26,0.6)' : '#ffffff',
+        border: `1px solid ${hovered ? `${exp.color}35` : 'var(--border)'}`,
         borderRadius: '14px',
-        transition: 'all 0.35s ease',
+        transition: 'all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)',
         transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
         boxShadow: hovered
           ? isDark
-            ? `0 20px 40px rgba(0,0,0,0.35), 0 0 0 1px ${exp.color}20`
-            : `0 12px 30px rgba(0,0,0,0.1)`
-          : isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.06)',
-        textAlign: align,
+            ? `0 16px 40px rgba(0,0,0,0.4), 0 0 0 1px ${exp.color}18`
+            : `0 8px 30px rgba(12,11,29,0.10), 0 0 0 1px ${exp.color}20`
+          : isDark
+            ? '0 2px 8px rgba(0,0,0,0.2)'
+            : '0 2px 8px rgba(12,11,29,0.05)',
+        backdropFilter: isDark ? 'blur(10px)' : 'none',
       }}
     >
-      {/* Header */}
+      {/* Row 1: Company + Date */}
       <div style={{
         display: 'flex',
         flexDirection: align === 'right' ? 'row-reverse' : 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: '12px',
-        marginBottom: '6px',
+        marginBottom: '10px',
         flexWrap: 'wrap',
       }}>
-        <div style={{
-          display: 'inline-block',
-          padding: '3px 10px',
-          background: `${exp.color}15`,
-          border: `1px solid ${exp.color}30`,
-          borderRadius: '100px',
-          fontFamily: 'var(--font-body)', fontSize: '11px',
-          color: exp.color, fontWeight: 600, letterSpacing: '0.06em',
-          whiteSpace: 'nowrap',
+        <span style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: '20px', fontWeight: 700,
+          letterSpacing: '-0.02em',
+          color: 'var(--text)',
+        }}>
+          {exp.company}
+        </span>
+        <span style={{
+          fontFamily: 'var(--font-mono)', fontSize: '12px',
+          color: 'var(--text-muted)', letterSpacing: '0.04em',
+          whiteSpace: 'nowrap', flexShrink: 0,
         }}>
           {exp.period}
-        </div>
+        </span>
+      </div>
+
+      {/* Row 2: Role */}
+      <div style={{
+        fontFamily: 'var(--font-body)', fontSize: '15px',
+        color: exp.color, fontWeight: 600, marginBottom: '8px',
+        letterSpacing: '0.01em',
+      }}>
+        {exp.role}
+      </div>
+
+      {/* Row 3: Location */}
+      <div style={{
+        display: 'flex',
+        flexDirection: align === 'right' ? 'row-reverse' : 'row',
+        alignItems: 'center',
+        gap: '5px',
+        marginBottom: '16px',
+      }}>
+        <svg width="11" height="11" fill="none" viewBox="0 0 24 24"
+          stroke="var(--text-muted)" strokeWidth={2} style={{ flexShrink: 0 }}>
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+          <circle cx="12" cy="9" r="2.5" />
+        </svg>
         <span style={{
           fontFamily: 'var(--font-body)', fontSize: '12px',
-          color: 'var(--text-muted)', letterSpacing: '0.04em',
+          color: 'var(--text-muted)', letterSpacing: '0.03em',
         }}>
           {exp.location}
         </span>
       </div>
 
-      <h3 style={{
-        fontFamily: 'var(--font-display)',
-        fontSize: '20px', fontWeight: 700,
-        letterSpacing: '-0.03em',
-        color: 'var(--text)', marginBottom: '4px',
-      }}>
-        {exp.role}
-      </h3>
-      <div style={{
-        fontFamily: 'var(--font-body)', fontSize: '14px',
-        color: exp.color, fontWeight: 600, marginBottom: '16px',
-      }}>
-        {exp.company}
-      </div>
-
-      <ul style={{
-        listStyle: 'none', margin: 0, padding: 0,
-        display: 'flex', flexDirection: 'column', gap: '8px',
-      }}>
-        {exp.bullets.map((b, i) => (
-          <li key={i} style={{
-            display: 'flex',
-            flexDirection: align === 'right' ? 'row-reverse' : 'row',
-            gap: '10px',
-            alignItems: 'flex-start',
-          }}>
-            <span style={{
-              width: '5px', height: '5px', borderRadius: '50%',
-              background: exp.color, flexShrink: 0, marginTop: '7px',
-            }} />
-            <span style={{
-              fontFamily: 'var(--font-body)', fontSize: '14px',
-              color: isDark ? 'rgba(240,240,245,0.72)' : '#374151',
-              lineHeight: 1.7,
-            }}>
-              {b}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      {/* Tech tags */}
+      {/* Row 4: Tech pills */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: '6px',
-        marginTop: '16px',
         justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
       }}>
         {exp.tech.map((t) => (
@@ -315,17 +302,18 @@ function EducationCard({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        padding: '32px',
-        background: isDark ? 'var(--bg)' : '#ffffff',
-        border: `1px solid ${hovered ? `${edu.color}40` : 'var(--border)'}`,
+        padding: '28px 32px',
+        background: isDark ? 'rgba(14,14,26,0.6)' : '#ffffff',
+        border: `1px solid ${hovered ? `${edu.color}35` : 'var(--border)'}`,
         borderRadius: '16px',
-        transition: 'all 0.35s ease',
+        backdropFilter: isDark ? 'blur(10px)' : 'none',
+        transition: 'all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)',
         transform: hovered ? 'translateY(-5px)' : 'translateY(0)',
         boxShadow: hovered
           ? isDark
-            ? `0 20px 40px rgba(0,0,0,0.35)`
-            : '0 12px 30px rgba(0,0,0,0.1)'
-          : 'none',
+            ? `0 16px 40px rgba(0,0,0,0.4)`
+            : `0 8px 30px rgba(12,11,29,0.10)`
+          : isDark ? '0 2px 8px rgba(0,0,0,0.2)' : '0 2px 8px rgba(12,11,29,0.05)',
       }}
     >
       {/* Cap icon */}
@@ -361,15 +349,9 @@ function EducationCard({
       </div>
       <div style={{
         fontFamily: 'var(--font-body)', fontSize: '13px',
-        color: 'var(--text-muted)', marginBottom: '4px',
-      }}>
-        {edu.period} · {edu.location}
-      </div>
-      <div style={{
-        fontFamily: 'var(--font-body)', fontSize: '13px',
         color: 'var(--text-muted)',
       }}>
-        Focus: {edu.focus}
+        {edu.period} · {edu.location}
       </div>
     </motion.div>
   );

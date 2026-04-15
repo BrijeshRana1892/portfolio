@@ -69,6 +69,9 @@ function ContactParticles({ isDark }: { isDark: boolean }) {
     };
   }, [isDark]);
 
+  // No floating particles in light mode — looks wrong on light backgrounds
+  if (!isDark) return null;
+
   return (
     <canvas
       ref={canvasRef}
@@ -83,11 +86,13 @@ function SocialLink({
   label,
   icon,
   color,
+  isDark,
 }: {
   href: string;
   label: string;
   icon: React.ReactNode;
   color: string;
+  isDark: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -100,16 +105,22 @@ function SocialLink({
       style={{
         display: 'inline-flex', alignItems: 'center', gap: '10px',
         padding: '12px 22px',
-        background: hovered ? `${color}15` : 'rgba(255,255,255,0.04)',
-        border: `1px solid ${hovered ? `${color}50` : 'rgba(255,255,255,0.08)'}`,
+        background: hovered
+          ? `${color}15`
+          : isDark ? 'rgba(255,255,255,0.04)' : '#ffffff',
+        border: `1px solid ${hovered
+          ? `${color}50`
+          : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(91,76,255,0.10)'}`,
         borderRadius: '10px',
         textDecoration: 'none',
-        color: hovered ? color : 'rgba(240,240,245,0.7)',
+        color: hovered ? color : isDark ? 'rgba(240,240,245,0.7)' : 'var(--text-muted)',
         fontFamily: 'var(--font-body)',
         fontSize: '14px', fontWeight: 600,
         letterSpacing: '0.04em',
         transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
-        boxShadow: hovered ? `0 8px 24px ${color}25` : 'none',
+        boxShadow: hovered
+          ? `0 8px 24px ${color}25`
+          : isDark ? 'none' : '0 2px 8px rgba(12,11,29,0.05)',
         transition: 'all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)',
       }}
     >
@@ -141,7 +152,7 @@ export default function Contact() {
       style={{
         position: 'relative',
         overflow: 'hidden',
-        background: isDark ? '#06060f' : 'var(--bg)',
+        background: isDark ? '#06060f' : 'transparent',
         padding: '140px 0 100px',
         minHeight: '80vh',
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
@@ -152,7 +163,7 @@ export default function Contact() {
         <ContactParticles isDark={isDark} />
       </div>
 
-      {/* Color orbs */}
+      {/* Color orbs — dark mode vs light mode versions */}
       <div
         aria-hidden
         style={{
@@ -160,24 +171,54 @@ export default function Contact() {
           overflow: 'hidden',
         }}
       >
-        {[
-          { color: 'rgba(108,99,255,0.18)', size: 700, x: '-10%', y: '10%', anim: 'drift-1 25s ease-in-out infinite' },
-          { color: 'rgba(0,212,255,0.12)', size: 500, x: '70%', y: '50%', anim: 'drift-2 30s ease-in-out infinite' },
-          { color: 'rgba(79,0,188,0.14)', size: 400, x: '30%', y: '80%', anim: 'drift-3 20s ease-in-out infinite' },
-        ].map((orb, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: orb.x, top: orb.y,
-              width: orb.size, height: orb.size,
-              borderRadius: '50%',
-              background: `radial-gradient(circle, ${orb.color} 0%, transparent 70%)`,
-              filter: 'blur(40px)',
-              animation: orb.anim,
-            }}
-          />
-        ))}
+        {isDark ? (
+          // Dark mode: deep purple/cyan/violet
+          <>
+            {[
+              { color: 'rgba(108,99,255,0.18)', size: 700, x: '-10%', y: '10%', anim: 'drift-1 25s ease-in-out infinite' },
+              { color: 'rgba(0,212,255,0.12)', size: 500, x: '70%', y: '50%', anim: 'drift-2 30s ease-in-out infinite' },
+              { color: 'rgba(79,0,188,0.14)', size: 400, x: '30%', y: '80%', anim: 'drift-3 20s ease-in-out infinite' },
+            ].map((orb, i) => (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  left: orb.x, top: orb.y,
+                  width: orb.size, height: orb.size,
+                  borderRadius: '50%',
+                  background: `radial-gradient(circle, ${orb.color} 0%, transparent 70%)`,
+                  filter: 'blur(40px)',
+                  animation: orb.anim,
+                }}
+              />
+            ))}
+          </>
+        ) : (
+          // Light mode: vivid violet + cyan blobs — replaces particles
+          <>
+            <div style={{
+              position: 'absolute', left: '-5%', top: '15%',
+              width: '520px', height: '520px', borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(180,160,255,0.35) 0%, transparent 68%)',
+              filter: 'blur(60px)',
+              animation: 'drift-1 25s ease-in-out infinite',
+            }} />
+            <div style={{
+              position: 'absolute', right: '5%', top: '35%',
+              width: '380px', height: '380px', borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(140,210,240,0.28) 0%, transparent 68%)',
+              filter: 'blur(50px)',
+              animation: 'drift-2 30s ease-in-out infinite',
+            }} />
+            <div style={{
+              position: 'absolute', left: '35%', bottom: '10%',
+              width: '300px', height: '300px', borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255,180,200,0.22) 0%, transparent 68%)',
+              filter: 'blur(45px)',
+              animation: 'drift-3 20s ease-in-out infinite',
+            }} />
+          </>
+        )}
       </div>
 
       {/* Film grain */}
@@ -346,6 +387,7 @@ export default function Contact() {
             href={meta.linkedin}
             label="LinkedIn"
             color="#0a66c2"
+            isDark={isDark}
             icon={
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -356,6 +398,7 @@ export default function Contact() {
             href={meta.github}
             label="GitHub"
             color="#9b8fff"
+            isDark={isDark}
             icon={
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
@@ -366,6 +409,7 @@ export default function Contact() {
             href={`mailto:${meta.email}`}
             label="Email"
             color="#00d4ff"
+            isDark={isDark}
             icon={
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

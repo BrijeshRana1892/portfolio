@@ -48,10 +48,10 @@ function OrbitDot({
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.07}
-        color={isDark ? '#00d4ff' : '#0891b2'}
+        size={isDark ? 0.07 : 0.09}
+        color={isDark ? '#00d4ff' : '#5b4cff'}
         transparent
-        opacity={0.75}
+        opacity={isDark ? 0.75 : 0.85}
         sizeAttenuation
       />
     </points>
@@ -70,8 +70,9 @@ function IcoMesh({
   const meshRef   = useRef<THREE.Mesh>(null);
   const lerpPos   = useRef({ x: 0, y: 0 });
 
-  const accentColor    = isDark ? '#6c63ff' : '#4f46e5';
-  const secondaryColor = isDark ? '#00d4ff' : '#0891b2';
+  // Light mode: use darker, more saturated colors for contrast on light bg
+  const accentColor    = isDark ? '#6c63ff' : '#5b4cff';
+  const secondaryColor = isDark ? '#00d4ff' : '#4a3de8';
 
   useFrame((state) => {
     if (!groupRef.current || !meshRef.current) return;
@@ -94,14 +95,14 @@ function IcoMesh({
 
   return (
     <group ref={groupRef}>
-      {/* Primary wireframe icosahedron */}
+      {/* Primary wireframe icosahedron — MORE opaque in light for contrast */}
       <mesh ref={meshRef}>
         <icosahedronGeometry args={[1.0, 1]} />
         <meshBasicMaterial
           color={accentColor}
           wireframe
           transparent
-          opacity={isDark ? 0.52 : 0.42}
+          opacity={isDark ? 0.52 : 0.62}
         />
       </mesh>
 
@@ -112,18 +113,17 @@ function IcoMesh({
           color={secondaryColor}
           wireframe
           transparent
-          opacity={isDark ? 0.20 : 0.16}
+          opacity={isDark ? 0.20 : 0.28}
         />
       </mesh>
 
-      {/* Subtle inner glow fill */}
+      {/* Inner solid sphere — gives the shape body on light bg */}
       <mesh>
-        <sphereGeometry args={[0.68, 16, 16]} />
+        <sphereGeometry args={[0.68, 24, 24]} />
         <meshBasicMaterial
           color={accentColor}
           transparent
-          opacity={isDark ? 0.05 : 0.03}
-          side={THREE.BackSide}
+          opacity={isDark ? 0.05 : 0.07}
         />
       </mesh>
 

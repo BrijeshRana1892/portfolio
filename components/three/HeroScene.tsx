@@ -32,7 +32,7 @@ const SHAPES_DATA = [
 
 // ── Single peripheral shape ───────────────────────────────────
 function PeripheralShape({
-  position, type, scale, color, speed, mouse,
+  position, type, scale, color, speed, mouse, isDark,
 }: {
   position: [number, number, number];
   type: string;
@@ -40,6 +40,7 @@ function PeripheralShape({
   color: string;
   speed: number;
   mouse: React.MutableRefObject<{ x: number; y: number }>;
+  isDark: boolean;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const basePos = useRef(new THREE.Vector3(...position));
@@ -95,9 +96,14 @@ function PeripheralShape({
     }
   }, [type]);
 
+  // In light mode: violet accent tones instead of white/cyan
+  const lightColor = '#5b4cff';
+  const wireColor  = isDark ? color : lightColor;
+  const wireOpacity = isDark ? 0.35 : 0.22;
+
   return (
     <mesh ref={meshRef} position={position} scale={scale} geometry={geo}>
-      <meshBasicMaterial color={color} wireframe transparent opacity={0.35} />
+      <meshBasicMaterial color={wireColor} wireframe transparent opacity={wireOpacity} />
     </mesh>
   );
 }
@@ -136,6 +142,9 @@ function StarField({ isDark }: { isDark: boolean }) {
     ref.current.rotation.x = state.clock.elapsedTime * 0.004;
   });
 
+  // No particles in light mode — looks wrong on light backgrounds
+  if (!isDark) return null;
+
   return (
     <points ref={ref}>
       <bufferGeometry>
@@ -143,10 +152,10 @@ function StarField({ isDark }: { isDark: boolean }) {
         <bufferAttribute attach="attributes-color"    args={[colors, 3]}    />
       </bufferGeometry>
       <pointsMaterial
-        size={isDark ? 0.028 : 0.018}
+        size={0.028}
         vertexColors
         transparent
-        opacity={isDark ? 0.55 : 0.3}
+        opacity={0.55}
         sizeAttenuation
       />
     </points>
@@ -174,6 +183,7 @@ function Scene({
           color={s.color}
           speed={s.speed}
           mouse={mouse}
+          isDark={isDark}
         />
       ))}
     </>

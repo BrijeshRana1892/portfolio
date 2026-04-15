@@ -8,8 +8,8 @@ export const meta = {
   description:
     'Portfolio of Brijesh Rana — CS Master\'s student at CSULB building intelligent full-stack systems with React, Python, and AI/ML.',
   email: 'Brijesh.Rana-SA@csulb.edu',
-  github: 'https://github.com/branarama',
-  linkedin: 'https://linkedin.com/in/brijesh-rana',
+  github: 'https://github.com/BrijeshRana1892',
+  linkedin: 'https://linkedin.com/in/brijesh-rana', // TODO: replace with actual LinkedIn URL
   location: 'Long Beach, CA',
   status: 'Available for Summer 2026 Internship',
 };
@@ -118,7 +118,7 @@ export const projects = [
     color: '#00d4ff',
     gradientFrom: '#0066ff',
     gradientTo: '#00d4ff',
-    github: 'https://github.com/branarama',
+    github: 'https://github.com/BrijeshRana1892',
     demo: null,
   },
   {
@@ -134,7 +134,7 @@ export const projects = [
     color: '#a855f7',
     gradientFrom: '#6c63ff',
     gradientTo: '#a855f7',
-    github: 'https://github.com/branarama',
+    github: 'https://github.com/BrijeshRana1892',
     demo: 'https://codetique.vercel.app',
   },
   {
@@ -150,7 +150,7 @@ export const projects = [
     color: '#4ade80',
     gradientFrom: '#059669',
     gradientTo: '#4ade80',
-    github: 'https://github.com/branarama',
+    github: 'https://github.com/BrijeshRana1892',
     demo: null,
   },
   {
@@ -166,7 +166,7 @@ export const projects = [
     color: '#fb923c',
     gradientFrom: '#d97706',
     gradientTo: '#fb923c',
-    github: 'https://github.com/branarama',
+    github: 'https://github.com/BrijeshRana1892',
     demo: 'https://flipbook.vercel.app',
   },
 ];

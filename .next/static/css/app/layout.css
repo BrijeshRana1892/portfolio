@@ -1075,6 +1075,9 @@ video {
 .visible {
   visibility: visible;
 }
+.invisible {
+  visibility: hidden;
+}
 .fixed {
   position: fixed;
 }
@@ -1177,23 +1180,42 @@ video {
 }
 
 /* ═══════════════════════════════════════════════════════
-   LIGHT MODE
+   LIGHT MODE — Premium, Linear.app-grade
    ═══════════════════════════════════════════════════════ */
 html.light {
-  --bg:         #f0eeff;
+  /* Backgrounds — NOT pure white */
+  --bg:         #f8f8fc;
   --surface:    #ffffff;
-  --surface-2:  #e8e4ff;
+  --surface-2:  #f3f2ff;
 
-  --accent:     #4f46e5;
+  /* Accents — richer and more saturated */
+  --accent:     #5b4cff;
+  --accent-hover: #4a3de8;
   --secondary:  #0891b2;
-  --accent-glow: rgba(79, 70, 229, 0.25);
-  --secondary-glow: rgba(8, 145, 178, 0.2);
+  --accent-glow: rgba(91, 76, 255, 0.12);
+  --secondary-glow: rgba(8, 145, 178, 0.12);
 
-  --text:       #0d0d1a;
-  --text-muted: #4b5563;
+  /* Text — true dark with blue undertone */
+  --text:       #0c0b1d;
+  --text-muted: #6e6b82;
 
-  --border:     rgba(79, 70, 229, 0.15);
-  --border-2:   rgba(79, 70, 229, 0.08);
+  /* Borders — violet-tinted, soft */
+  --border:     rgba(91, 76, 255, 0.08);
+  --border-2:   rgba(91, 76, 255, 0.04);
+
+  /* Shadows — what makes light mode feel premium */
+  --shadow-sm:  0 1px 2px rgba(12, 11, 29, 0.04);
+  --shadow-md:  0 4px 12px rgba(12, 11, 29, 0.06);
+  --shadow-lg:  0 8px 30px rgba(12, 11, 29, 0.08);
+
+  /* ── Gradient blobs on the html root ─────────────────
+     Sections are made transparent so this always shows  */
+  background-color: #f8f8fc;
+  background-image:
+    radial-gradient(ellipse 620px 560px at 12% 18%, rgba(195, 170, 255, 0.42) 0%, transparent 68%),
+    radial-gradient(ellipse 520px 480px at 82% 28%, rgba(160, 220, 245, 0.32) 0%, transparent 68%),
+    radial-gradient(ellipse 440px 380px at 48% 85%, rgba(255, 190, 210, 0.26) 0%, transparent 68%);
+  animation: lightBlobDrift 30s ease-in-out infinite alternate;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1220,6 +1242,16 @@ body {
   transition:
     background-color 0.45s cubic-bezier(0.4,0,0.2,1),
     color 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+/* Light mode: body is a transparent dot-grid overlay so html blobs show through */
+html.light body {
+  background-color: transparent;
+  background-image: radial-gradient(circle, rgba(91, 76, 255, 0.065) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+/* Sections must also be transparent so html gradient is never blocked */
+html.light section {
+  background: transparent !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -1266,10 +1298,9 @@ body::before {
   pointer-events: none;
   z-index: 0;
 }
+/* Light mode: html handles the gradient — body::before not needed */
 html.light body::before {
-  background:
-    radial-gradient(ellipse 60% 40% at 10% 20%, rgba(108,99,255,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 90% 80%, rgba(0,180,255,0.08) 0%, transparent 60%);
+  display: none;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1286,7 +1317,7 @@ body::after {
   z-index: 9998;
   animation: grain 0.5s steps(3) infinite;
 }
-html.light body::after { opacity: 0.014; }
+html.light body::after { opacity: 0.020; }
 
 @keyframes grain {
   0%   { transform: translate(0,0); }
@@ -1294,6 +1325,12 @@ html.light body::after { opacity: 0.014; }
   50%  { transform: translate(3%,1%); }
   75%  { transform: translate(-1%,4%); }
   100% { transform: translate(2%,-2%); }
+}
+@keyframes lightBlobDrift {
+  0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
+  33%  { background-position: 3% -2%, 97% 3%, 53% 97%; }
+  66%  { background-position: -2% 3%, 102% -2%, 47% 103%; }
+  100% { background-position: 1% 1%, 99% 1%, 51% 99%; }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1306,7 +1343,8 @@ html.light body::after { opacity: 0.014; }
   background-clip: text;
 }
 html.light .gradient-text {
-  background: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%);
+  /* More saturated for visibility on light bg */
+  background: linear-gradient(135deg, #5b4cff 0%, #0891b2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1323,9 +1361,12 @@ html.light .gradient-text {
   border-radius: 16px;
 }
 html.light .glass {
-  background: rgba(255,255,255,0.85);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 24px rgba(79,70,229,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  /* Cards float via shadow in light mode (not glass borders) */
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(91, 76, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(12, 11, 29, 0.06), 0 1px 3px rgba(12, 11, 29, 0.04);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1379,6 +1420,9 @@ html.light .glass {
   z-index: 9999;
   transform-origin: left;
   box-shadow: 0 0 10px var(--accent-glow);
+}
+html.light .scroll-progress {
+  box-shadow: none; /* glow looks bad on light bg */
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1466,7 +1510,8 @@ html.light .glass {
   border-bottom: 1px solid var(--border);
 }
 html.light .main-nav.scrolled {
-  background: rgba(240,238,255,0.92);
+  background: rgba(248, 248, 252, 0.88);
+  box-shadow: 0 1px 0 rgba(91, 76, 255, 0.08), 0 2px 8px rgba(12, 11, 29, 0.04);
 }
 @media (max-width: 768px) {
   .main-nav, .main-nav.scrolled { padding: 16px 20px; }
@@ -1566,7 +1611,10 @@ html.light .main-nav.scrolled {
   display: flex; flex-direction: column; gap: 28px;
   border-top: 1px solid var(--border);
 }
-html.light .mobile-menu { background: rgba(240,238,255,0.98); }
+html.light .mobile-menu {
+  background: rgba(248, 248, 252, 0.98);
+  box-shadow: 0 4px 24px rgba(12, 11, 29, 0.08);
+}
 
 .mobile-nav-link {
   background: none; border: none;
@@ -1655,8 +1703,11 @@ html.light .mobile-menu { background: rgba(240,238,255,0.98); }
 .skill-pill:hover { transform: scale(1.08); }
 html.light .skill-pill {
   background: #ffffff;
-  border-color: rgba(79,70,229,0.15);
-  box-shadow: 0 2px 8px rgba(79,70,229,0.06);
+  border-color: rgba(91, 76, 255, 0.10);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(12,11,29,0.04)), 0 2px 8px rgba(91,76,255,0.05);
+}
+html.light .skill-pill:hover {
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(12,11,29,0.06)), 0 0 0 1px rgba(91,76,255,0.12);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1729,9 +1780,9 @@ html.light .skill-pill {
   letter-spacing: 0.02em;
 }
 html.light .tech-tag {
-  background: rgba(79,70,229,0.06);
-  border-color: rgba(79,70,229,0.18);
-  color: #3730a3;
+  background: rgba(91, 76, 255, 0.06);
+  border-color: rgba(91, 76, 255, 0.12);
+  color: #4a3de8;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1757,7 +1808,73 @@ html.light h1,
 html.light h2,
 html.light h3,
 html.light h4 {
-  color: #0d0d1a;
+  color: #0c0b1d;
+}
+
+/* No text-shadow glows in light mode — they look muddy */
+html.light [style*="text-shadow"] {
+  text-shadow: none !important;
+}
+
+/* Theme toggle — surface + subtle shadow */
+html.light .theme-toggle {
+  background: var(--surface);
+  border-color: rgba(91, 76, 255, 0.12);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(12,11,29,0.06));
+}
+html.light .theme-toggle:hover {
+  box-shadow: var(--shadow-lg, 0 8px 30px rgba(12,11,29,0.08)), 0 0 20px rgba(91,76,255,0.10);
+}
+
+/* Cursor ring in light mode */
+html.light .cursor-ring {
+  border-color: rgba(91, 76, 255, 0.45);
+}
+html.light .cursor-ring.hover {
+  background: rgba(91, 76, 255, 0.06);
+  border-color: var(--accent);
+}
+html.light .cursor-ring.click {
+  background: rgba(91, 76, 255, 0.05);
+  border-color: var(--accent);
+}
+
+/* Nav github button in light mode */
+html.light .nav-github {
+  border-color: rgba(91, 76, 255, 0.30);
+  color: var(--accent);
+}
+html.light .nav-github:hover {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+/* ── Light mode cards: depth via shadows, not transparency ─── */
+/* Skills category cards */
+html.light [class*="category-card"],
+html.light [data-card] {
+  background: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(12,11,29,0.06), 0 1px 2px rgba(12,11,29,0.04) !important;
+  border: 1px solid rgba(91,76,255,0.07) !important;
+}
+html.light [class*="category-card"]:hover,
+html.light [data-card]:hover {
+  box-shadow: 0 8px 28px rgba(91,76,255,0.10), 0 2px 6px rgba(12,11,29,0.06) !important;
+  border-color: rgba(91,76,255,0.14) !important;
+}
+
+/* Focal shape 3D container — drop-shadow glow in light mode */
+html.light .hero-focal {
+  filter: drop-shadow(0 0 48px rgba(91, 76, 255, 0.18));
+}
+
+/* Section fades: use --bg which is transparent in light, so fade to html bg color */
+html.light .section-fade-top {
+  background: linear-gradient(to bottom, #f8f8fc, transparent);
+}
+html.light .section-fade-bottom {
+  background: linear-gradient(to top, #f8f8fc, transparent);
 }
 
 /* ═══════════════════════════════════════════════════════

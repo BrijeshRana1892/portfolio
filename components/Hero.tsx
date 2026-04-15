@@ -29,9 +29,12 @@ function useDarkMode() {
 }
 
 // ── Typewriter ───────────────────────────────────────────────────
-const ROLE_COLORS = ['#00d4ff', '#a78bfa', '#4ade80', '#fb923c'];
+// Dark: cyan / violet / green / orange — vivid on dark bg
+// Light: accent violet variants — readable on light bg
+const ROLE_COLORS_DARK  = ['#00d4ff', '#a78bfa', '#4ade80', '#fb923c'];
+const ROLE_COLORS_LIGHT = ['#5b4cff', '#7c3aed', '#059669', '#d97706'];
 
-function TypewriterCycle({ words }: { words: string[] }) {
+function TypewriterCycle({ words, isDark }: { words: string[]; isDark: boolean }) {
   const [idx, setIdx] = useState(0);
   const [display, setDisplay] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -61,8 +64,9 @@ function TypewriterCycle({ words }: { words: string[] }) {
     }
   }, [display, deleting, pause, idx, words]);
 
+  const colors = isDark ? ROLE_COLORS_DARK : ROLE_COLORS_LIGHT;
   return (
-    <span style={{ color: ROLE_COLORS[idx % ROLE_COLORS.length], transition: 'color 0.4s ease' }}>
+    <span style={{ color: colors[idx % colors.length], transition: 'color 0.4s ease' }}>
       {display}
       <motion.span
         animate={{ opacity: [1, 0] }}
@@ -130,8 +134,8 @@ function MagneticBtn({
   const ghost: React.CSSProperties = {
     ...base,
     background: 'transparent',
-    color: isDark ? 'rgba(240,240,245,0.75)' : '#374151',
-    border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.15)',
+    color: isDark ? 'rgba(240,240,245,0.75)' : '#3d3a50',
+    border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(91,76,255,0.25)',
   };
 
   const handleEnter = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -142,8 +146,8 @@ function MagneticBtn({
         : '0 6px 28px rgba(79,70,229,0.5)';
       el.style.filter = 'brightness(1.12)';
     } else {
-      el.style.background = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
-      el.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)';
+      el.style.background = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(91,76,255,0.06)';
+      el.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(91,76,255,0.35)';
     }
     const arrow = el.querySelector('.btn-arrow') as HTMLElement;
     if (arrow) arrow.style.transform = 'translateX(4px)';
@@ -159,7 +163,7 @@ function MagneticBtn({
       el.style.filter = '';
     } else {
       el.style.background = 'transparent';
-      el.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+      el.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(91,76,255,0.25)';
     }
     const arrow = el.querySelector('.btn-arrow') as HTMLElement;
     if (arrow) arrow.style.transform = 'translateX(0)';
@@ -228,13 +232,14 @@ export default function Hero() {
         position: 'relative',
         minHeight: '100vh',
         overflow: 'hidden',
-        background: 'var(--bg)',
+        /* transparent in light mode so html gradient mesh shows through */
+        background: isDark ? 'var(--bg)' : 'transparent',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      {/* ── Layer 1: R3F full-viewport scene (starfield + peripheral shapes) ── */}
-      {mounted && (
+      {/* ── Layer 1: R3F scene — dark mode only (wireframe shapes + starfield) ── */}
+      {mounted && isDark && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
           <HeroScene isDark={isDark} mouse={mouse} />
         </div>
@@ -247,59 +252,66 @@ export default function Hero() {
           position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none', overflow: 'hidden',
         }}
       >
+        {/* Violet blob — bottom-left */}
         <div style={{
           position: 'absolute',
           bottom: '-10%', left: '-8%',
-          width: '50vw', height: '50vw',
+          width: '55vw', height: '55vw',
           borderRadius: '50%',
           background: isDark
             ? 'radial-gradient(circle, rgba(108,99,255,0.18) 0%, transparent 65%)'
-            : 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 65%)',
-          filter: 'blur(70px)',
+            : 'radial-gradient(circle, rgba(108,80,255,0.28) 0%, transparent 62%)',
+          filter: 'blur(80px)',
           animation: 'drift-1 32s ease-in-out infinite',
         }} />
+        {/* Cyan blob — top-right */}
         <div style={{
           position: 'absolute',
           top: '-5%', right: '5%',
-          width: '38vw', height: '38vw',
+          width: '40vw', height: '40vw',
           borderRadius: '50%',
           background: isDark
             ? 'radial-gradient(circle, rgba(0,212,255,0.13) 0%, transparent 65%)'
-            : 'radial-gradient(circle, rgba(8,145,178,0.06) 0%, transparent 65%)',
-          filter: 'blur(60px)',
+            : 'radial-gradient(circle, rgba(0,180,240,0.22) 0%, transparent 62%)',
+          filter: 'blur(70px)',
           animation: 'drift-2 26s ease-in-out infinite',
         }} />
-        <div style={{
-          position: 'absolute',
-          top: '40%', left: '38%',
-          width: '28vw', height: '28vw',
-          borderRadius: '50%',
-          background: isDark
-            ? 'radial-gradient(circle, rgba(79,0,188,0.10) 0%, transparent 65%)'
-            : 'radial-gradient(circle, rgba(109,40,217,0.05) 0%, transparent 65%)',
-          filter: 'blur(50px)',
-          animation: 'drift-3 38s ease-in-out infinite',
-        }} />
+        {/* Rose blob — center (light mode only) */}
+        {!isDark && (
+          <div style={{
+            position: 'absolute',
+            top: '55%', left: '55%',
+            width: '32vw', height: '32vw',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,150,180,0.18) 0%, transparent 62%)',
+            filter: 'blur(60px)',
+            animation: 'drift-3 38s ease-in-out infinite',
+          }} />
+        )}
       </div>
 
-      {/* ── Layer 3: Film grain ── */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
-          opacity: isDark ? 0.030 : 0.015,
-        }}
-      />
+      {/* ── Layer 3: Film grain (dark only — noise is invisible on light) ── */}
+      {isDark && (
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
+            opacity: 0.030,
+          }}
+        />
+      )}
 
-      {/* ── Layer 3: Vignette ── */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
-          background: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 50%, rgba(6,6,15,0.52) 100%)',
-        }}
-      />
+      {/* ── Layer 3: Vignette (dark only) ── */}
+      {isDark && (
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 50%, rgba(6,6,15,0.52) 100%)',
+          }}
+        />
+      )}
 
       {/* ── Main content layout ── */}
       <div
@@ -441,7 +453,7 @@ export default function Hero() {
                 minHeight: '26px',
               }}
             >
-              <TypewriterCycle words={roles} />
+              <TypewriterCycle words={roles} isDark={isDark} />
             </motion.div>
 
             {/* Tagline */}
