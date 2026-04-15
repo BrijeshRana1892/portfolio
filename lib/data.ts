@@ -7,7 +7,7 @@ export const meta = {
   title: 'Brijesh Rana — Software Engineer & AI/ML Developer',
   description:
     'Brijesh Rana — Software Engineer & AI/ML Developer building agentic systems, full-stack applications, and intelligent software. MS Computer Science, CSULB 2026.',
-  email: 'Brijesh.Rana-SA@csulb.edu',
+  email: 'rbrijesh1892@gmail.com',
   github: 'https://github.com/BrijeshRana1892',
   linkedin: 'https://www.linkedin.com/in/brijesh-tech/', // TODO: replace with actual LinkedIn URL
   location: 'Long Beach, CA',

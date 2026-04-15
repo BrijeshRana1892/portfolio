@@ -211,16 +211,12 @@ function DeviceMockup({
 // ── Single project panel ─────────────────────────────────────────
 function ProjectPanel({
   project,
-  isActive,
   isDark,
 }: {
   project: (typeof projects)[0];
-  isActive: boolean;
   isDark: boolean;
 }) {
   return (
-    <AnimatePresence mode="wait">
-      {isActive && (
         <motion.div
           key={project.id}
           initial={{ opacity: 0, x: 60 }}
@@ -402,8 +398,6 @@ function ProjectPanel({
             <DeviceMockup project={project} isDark={isDark} />
           </motion.div>
         </motion.div>
-      )}
-    </AnimatePresence>
   );
 }
 
@@ -540,18 +534,14 @@ export default function Projects() {
         </div>
 
         {/* Project panel */}
-        <div style={{ position: 'relative', minHeight: '480px' }}>
-          {projects.map((p, i) => (
-            <div
-              key={p.id}
-              style={{
-                position: 'absolute', inset: 0,
-                display: i === active ? 'block' : 'none',
-              }}
-            >
-              <ProjectPanel project={p} isActive={i === active} isDark={isDark} />
-            </div>
-          ))}
+        <div style={{ position: 'relative' }}>
+          <AnimatePresence mode="popLayout">
+            <ProjectPanel
+              key={proj.id}
+              project={proj}
+              isDark={isDark}
+            />
+          </AnimatePresence>
         </div>
 
         {/* Prev/Next arrows */}

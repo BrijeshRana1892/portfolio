@@ -16,6 +16,17 @@ function useDarkMode() {
   return isDark;
 }
 
+function useIsMobile(breakpoint = 820) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= breakpoint);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 // ── SVG Timeline line that draws itself on scroll ──────────────
 function TimelineLine() {
   const ref = useRef<SVGLineElement>(null);
@@ -114,6 +125,7 @@ function ExperienceCard({
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
   const isLeft = index % 2 === 0;
+  const isMobile = useIsMobile();
 
   return (
     <div
@@ -137,7 +149,7 @@ function ExperienceCard({
             animate={inView ? { opacity: 1, x: 0, filter: 'blur(0px)' } : {}}
             transition={{ duration: 0.75, ease: [0.33, 1, 0.68, 1] }}
           >
-            <ExpCardContent exp={exp} isDark={isDark} align="right" />
+            <ExpCardContent exp={exp} isDark={isDark} align={isMobile ? 'left' : 'right'} />
           </motion.div>
         )}
       </div>
@@ -463,10 +475,19 @@ export default function Experience() {
       <style>{`
         @media (max-width: 820px) {
           .exp-row {
-            grid-template-columns: 0 24px 1fr !important;
+            display: flex !important;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 32px !important;
           }
-          .exp-row > div:first-child { display: none; }
-          .exp-row > div:last-child { padding-left: 20px !important; }
+          /* Hide the center dot column on mobile */
+          .exp-row > div:nth-child(2) { display: none !important; }
+          /* Both content slots: reset padding, empty ones collapse to 0 */
+          .exp-row > div:first-child,
+          .exp-row > div:last-child {
+            padding: 0 !important;
+            width: 100%;
+          }
         }
         @media (max-width: 560px) {
           .edu-grid { grid-template-columns: 1fr !important; }
