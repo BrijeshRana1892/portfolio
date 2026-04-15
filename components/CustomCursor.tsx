@@ -35,8 +35,8 @@ export default function CustomCursor() {
       dot.style.left = `${pos.current.x}px`;
       dot.style.top = `${pos.current.y}px`;
 
-      ringPos.current.x += (pos.current.x - ringPos.current.x) * 0.15;
-      ringPos.current.y += (pos.current.y - ringPos.current.y) * 0.15;
+      ringPos.current.x += (pos.current.x - ringPos.current.x) * 0.19;
+      ringPos.current.y += (pos.current.y - ringPos.current.y) * 0.19;
       ring.style.left = `${ringPos.current.x}px`;
       ring.style.top = `${ringPos.current.y}px`;
 

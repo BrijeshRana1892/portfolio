@@ -56,15 +56,22 @@ function MarqueeRow({
   reverse?: boolean;
   speed?: number;
 }) {
+  const [paused, setPaused] = useState(false);
   const doubled = [...skills, ...skills, ...skills];
   return (
-    <div className="marquee-container" style={{ padding: '10px 0' }}>
+    <div
+      className="marquee-container"
+      style={{ padding: '10px 0' }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <div
         className="marquee-track"
         style={{
           display: 'flex',
           width: 'max-content',
           animation: `${reverse ? 'marquee-reverse' : 'marquee'} ${speed}s linear infinite`,
+          animationPlayState: paused ? 'paused' : 'running',
         }}
       >
         {doubled.map((s, i) => (

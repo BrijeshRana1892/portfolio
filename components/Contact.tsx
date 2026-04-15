@@ -308,7 +308,7 @@ export default function Contact() {
             marginBottom: '56px',
           }}
         >
-          Open to Summer 2026 internships, collaborations, and conversations about the future of tech.
+          Open to Summer 2026 internships in software engineering, AI/ML, and agentic systems. Let&apos;s build something that moves the needle.
         </motion.p>
 
         {/* Email CTA */}

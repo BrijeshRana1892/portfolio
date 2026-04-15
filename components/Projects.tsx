@@ -83,45 +83,81 @@ function DeviceMockup({
             {/* Screen content */}
             <div style={{
               position: 'absolute', inset: 0,
-              background: 'rgba(0,0,0,0.35)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexDirection: 'column', gap: '10px', padding: '24px',
+              background: 'rgba(0,0,0,0.38)',
+              display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start',
+              flexDirection: 'column', padding: '40px 16px 16px 16px',
             }}>
-              {/* Fake browser bar */}
+              {/* Browser chrome */}
               <div style={{
-                position: 'absolute', top: '10px', left: '10px', right: '10px',
-                height: '24px',
-                background: 'rgba(0,0,0,0.4)',
+                position: 'absolute', top: '8px', left: '8px', right: '8px',
+                height: '26px',
+                background: 'rgba(0,0,0,0.45)',
                 borderRadius: '6px',
-                display: 'flex', alignItems: 'center', gap: '6px', padding: '0 8px',
+                display: 'flex', alignItems: 'center', gap: '6px', padding: '0 10px',
               }}>
                 {['#ff5f57','#ffbd2e','#28c840'].map((c) => (
-                  <div key={c} style={{ width: '8px', height: '8px', borderRadius: '50%', background: c }} />
+                  <div key={c} style={{ width: '7px', height: '7px', borderRadius: '50%', background: c }} />
+                ))}
+                {/* URL bar */}
+                <div style={{
+                  flex: 1, height: '14px', marginLeft: '6px',
+                  background: 'rgba(255,255,255,0.08)',
+                  borderRadius: '3px',
+                }}/>
+              </div>
+
+              {/* Project title */}
+              <div style={{
+                fontFamily: 'var(--font-display)', fontWeight: 700,
+                fontSize: '13px', color: '#fff', letterSpacing: '-0.02em',
+                marginBottom: '10px', lineHeight: 1.2,
+                textShadow: `0 0 20px ${project.color}80`,
+              }}>
+                {project.title}
+              </div>
+
+              {/* Stat row */}
+              <div style={{
+                display: 'flex', gap: '6px', marginBottom: '10px',
+              }}>
+                {[project.achievement].map((badge) => (
+                  <div key={badge} style={{
+                    padding: '2px 8px',
+                    background: `${project.color}22`,
+                    border: `1px solid ${project.color}50`,
+                    borderRadius: '4px',
+                    fontFamily: 'var(--font-mono)', fontSize: '8px',
+                    color: project.color, letterSpacing: '0.06em',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {badge}
+                  </div>
                 ))}
               </div>
-              {/* Project name on screen */}
-              <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                <div style={{
-                  fontFamily: 'var(--font-display)', fontWeight: 700,
-                  fontSize: '18px', color: '#fff', letterSpacing: '-0.03em',
-                  textShadow: '0 2px 12px rgba(0,0,0,0.5)',
-                }}>
-                  {project.title}
-                </div>
-                <div style={{
-                  fontFamily: 'var(--font-mono)', fontSize: '10px',
-                  color: 'rgba(255,255,255,0.7)', marginTop: '6px',
-                  letterSpacing: '0.1em', textTransform: 'uppercase',
-                }}>
-                  {project.year}
-                </div>
+
+              {/* Tech stack pills — top 4 */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {project.tech.slice(0, 4).map((t) => (
+                  <div key={t} style={{
+                    padding: '2px 7px',
+                    background: 'rgba(255,255,255,0.08)',
+                    borderRadius: '3px',
+                    fontFamily: 'var(--font-mono)', fontSize: '8px',
+                    color: 'rgba(255,255,255,0.7)', letterSpacing: '0.04em',
+                  }}>
+                    {t}
+                  </div>
+                ))}
               </div>
-              {/* Fake code lines */}
-              <div style={{ width: '80%' }}>
-                {[80, 60, 90, 50, 70].map((w, i) => (
+
+              {/* Simulated code lines using project color */}
+              <div style={{ width: '100%', marginTop: '10px' }}>
+                {[75, 55, 85, 45, 65, 40].map((w, i) => (
                   <div key={i} style={{
-                    height: '4px', borderRadius: '2px', margin: '5px 0',
-                    background: `rgba(255,255,255,${0.15 + (i % 3) * 0.08})`,
+                    height: '3px', borderRadius: '2px', margin: '4px 0',
+                    background: i % 3 === 0
+                      ? `${project.color}50`
+                      : `rgba(255,255,255,${0.08 + (i % 2) * 0.05})`,
                     width: `${w}%`,
                   }} />
                 ))}

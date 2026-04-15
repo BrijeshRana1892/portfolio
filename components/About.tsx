@@ -52,7 +52,7 @@ function Counter({ value, inView }: { value: string; inView: boolean }) {
 }
 
 // ── 3D Tilt card ────────────────────────────────────────────────
-function TiltCard({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+function TiltCard({ children, style, intensity = 12 }: { children: React.ReactNode; style?: React.CSSProperties; intensity?: number }) {
   const ref = useRef<HTMLDivElement>(null);
 
   const handleMove = (e: React.MouseEvent) => {
@@ -61,10 +61,10 @@ function TiltCard({ children, style }: { children: React.ReactNode; style?: Reac
     const rect = el.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.transform = `perspective(800px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) scale(1.02)`;
+    el.style.transform = `perspective(900px) rotateY(${x * intensity}deg) rotateX(${-y * intensity}deg)`;
   };
   const handleLeave = () => {
-    if (ref.current) ref.current.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) scale(1)';
+    if (ref.current) ref.current.style.transform = 'perspective(900px) rotateY(0deg) rotateX(0deg)';
   };
 
   return (
@@ -72,7 +72,7 @@ function TiltCard({ children, style }: { children: React.ReactNode; style?: Reac
       ref={ref}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
-      style={{ transition: 'transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94)', ...style }}
+      style={{ transition: 'transform 0.25s ease-out', ...style }}
     >
       {children}
     </div>
@@ -115,147 +115,250 @@ function SkillBadge({ name }: { name: string }) {
   );
 }
 
-// ── Avatar / photo frame placeholder ───────────────────────────
-function AvatarFrame({ isDark }: { isDark: boolean }) {
+// ── Bento grid data ──────────────────────────────────────────────
+type TokenType = 'kw' | 'fn' | 'str' | 'muted' | 'plain';
+
+const CODE_LINES: [string, TokenType][][] = [
+  [['class ', 'kw'], ['Agent', 'plain'], [':', 'muted']],
+  [['  def ', 'plain'], ['__init__', 'fn'], ['(self):', 'muted']],
+  [['    self.model', 'plain'], [' = ', 'muted'], ['"gpt-4o"', 'str']],
+  [['    self.memory', 'plain'], [' = []', 'muted']],
+  [],
+  [['  ', 'plain'], ['async', 'kw'], [' def ', 'plain'], ['think', 'fn'], ['(', 'muted']],
+  [['    self, ctx: ', 'plain'], ['str', 'kw']],
+  [['  ) -> ', 'muted'], ['str', 'kw'], [':', 'muted']],
+  [['    ', 'plain'], ['return', 'kw'], [' ', 'plain'], ['await', 'kw']],
+  [['      self.reason(ctx)', 'plain']],
+];
+
+const BENTO_TECHS = [
+  { name: 'React',      color: '#61dafb' },
+  { name: 'Python',     color: '#3776ab' },
+  { name: 'TypeScript', color: '#3178c6' },
+  { name: 'Next.js',    color: '#e2e8f0' },
+  { name: 'PyTorch',    color: '#ee4c2c' },
+  { name: 'LangChain',  color: '#22c55e' },
+  { name: 'Node.js',    color: '#68a063' },
+  { name: 'AWS',        color: '#ff9900' },
+  { name: 'FastAPI',    color: '#009688' },
+];
+
+// ── Bento grid (left side of About) ─────────────────────────────
+function BentoGrid({ isDark, inView }: { isDark: boolean; inView: boolean }) {
+  const [cursor, setCursor] = useState(true);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    const id = setInterval(() => setCursor(c => !c), 530);
+    return () => clearInterval(id);
+  }, []);
+
+  const tokenColor = (type: TokenType): string => {
+    switch (type) {
+      case 'kw':    return isDark ? '#c4b5fd' : '#7c3aed';
+      case 'fn':    return isDark ? '#86efac' : '#059669';
+      case 'str':   return isDark ? '#67e8f9' : '#0891b2';
+      case 'muted': return isDark ? 'rgba(240,240,245,0.35)' : '#9ca3af';
+      default:      return isDark ? 'rgba(240,240,245,0.82)' : '#374151';
+    }
+  };
+
+  const cardBase: React.CSSProperties = {
+    background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.82)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(91,76,255,0.07)'}`,
+    borderRadius: '14px',
+    transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+    boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.04)',
+  };
+
+  const doubled = [...BENTO_TECHS, ...BENTO_TECHS];
+
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: '420px', margin: '0 auto' }}>
-      {/* Rotating conic border */}
-      <div style={{
-        position: 'absolute', inset: '-3px',
-        borderRadius: '24px',
-        background: `conic-gradient(from 0deg, ${isDark ? '#6c63ff, #00d4ff, #9b8fff, #6c63ff' : '#4f46e5, #0891b2, #7c3aed, #4f46e5'})`,
-        animation: 'spin 6s linear infinite',
-        zIndex: 0,
-      }} />
-
-      {/* Main frame */}
-      <div style={{
-        position: 'relative', zIndex: 1,
-        borderRadius: '22px',
-        overflow: 'hidden',
-        background: isDark
-          ? 'linear-gradient(135deg, #0e0e2a 0%, #1a1a3a 50%, #0a0a1f 100%)'
-          : 'linear-gradient(135deg, #e8e4ff 0%, #f0eeff 50%, #ddd8ff 100%)',
-        aspectRatio: '4/5',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      }}>
-        {/* Gradient mesh orbs */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: '22px' }}>
-          <div style={{
-            position: 'absolute', width: '260px', height: '260px',
-            top: '-60px', left: '-60px',
-            background: 'radial-gradient(circle, rgba(108,99,255,0.35) 0%, transparent 70%)',
-            animation: 'drift-1 18s ease-in-out infinite',
-          }} />
-          <div style={{
-            position: 'absolute', width: '220px', height: '220px',
-            bottom: '-40px', right: '-40px',
-            background: 'radial-gradient(circle, rgba(0,212,255,0.25) 0%, transparent 70%)',
-            animation: 'drift-2 22s ease-in-out infinite',
-          }} />
-          <div style={{
-            position: 'absolute', width: '180px', height: '180px',
-            top: '40%', left: '30%',
-            background: 'radial-gradient(circle, rgba(155,143,255,0.2) 0%, transparent 70%)',
-            animation: 'drift-3 26s ease-in-out infinite',
-          }} />
-        </div>
-
-        {/* BR monogram */}
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: '1.2fr 1fr',
+      gap: '12px',
+      maxWidth: '460px',
+      width: '100%',
+    }}>
+      {/* CARD 1 — Code snippet (spans 2 rows) */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        style={{
+          ...cardBase,
+          gridColumn: '1',
+          gridRow: '1 / 3',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Editor top bar */}
         <div style={{
-          position: 'relative', zIndex: 2,
-          width: '120px', height: '120px',
-          borderRadius: '50%',
-          background: isDark
-            ? 'linear-gradient(135deg, #6c63ff, #00d4ff)'
-            : 'linear-gradient(135deg, #4f46e5, #0891b2)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: isDark
-            ? '0 0 60px rgba(108,99,255,0.6), 0 0 120px rgba(0,212,255,0.3)'
-            : '0 0 40px rgba(79,70,229,0.4)',
-          marginBottom: '24px',
-        }}>
-          <span style={{
-            fontFamily: 'var(--font-display)', fontWeight: 700,
-            fontSize: '44px', color: '#fff', letterSpacing: '-0.06em',
-          }}>BR</span>
-        </div>
-
-        {/* Available badge */}
-        <div style={{
-          position: 'absolute', top: '20px', right: '20px',
           display: 'flex', alignItems: 'center', gap: '6px',
-          padding: '6px 14px',
-          background: 'rgba(0,255,136,0.12)',
-          border: '1px solid rgba(0,255,136,0.3)',
-          borderRadius: '100px',
-          backdropFilter: 'blur(8px)',
-          zIndex: 3,
+          padding: '10px 14px',
+          background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+          borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
         }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ff5f57', flexShrink: 0 }} />
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#febc2e', flexShrink: 0 }} />
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#28c840', flexShrink: 0 }} />
           <span style={{
-            width: '6px', height: '6px', borderRadius: '50%',
-            background: '#00ff88',
-            animation: 'pulse-dot 2s ease-in-out infinite',
+            marginLeft: '8px',
+            fontFamily: 'var(--font-mono)', fontSize: '11px',
+            color: isDark ? 'rgba(240,240,245,0.38)' : '#9ca3af',
+          }}>main.py</span>
+        </div>
+
+        {/* Code body */}
+        <div style={{ padding: '14px 16px' }}>
+          {CODE_LINES.map((line, li) => (
+            <div key={li} style={{
+              display: 'flex',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              lineHeight: '1.72',
+              minHeight: '1.72em',
+            }}>
+              <span style={{
+                marginRight: '14px',
+                color: isDark ? 'rgba(240,240,245,0.18)' : '#d1d5db',
+                userSelect: 'none',
+                minWidth: '14px',
+                textAlign: 'right',
+                flexShrink: 0,
+              }}>{li + 1}</span>
+              <span>
+                {line.map(([text, type], ti) => (
+                  <span key={ti} style={{ color: tokenColor(type) }}>{text}</span>
+                ))}
+                {li === CODE_LINES.length - 1 && (
+                  <span style={{
+                    display: 'inline-block',
+                    width: '2px', height: '13px',
+                    background: isDark ? '#c4b5fd' : '#7c3aed',
+                    marginLeft: '1px',
+                    verticalAlign: 'text-bottom',
+                    opacity: cursor ? 1 : 0,
+                    transition: 'opacity 0.1s',
+                  }} />
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* CARD 2 — Location */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        style={{
+          ...cardBase,
+          gridColumn: '2',
+          gridRow: '1',
+          padding: '20px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          gap: '3px',
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke={isDark ? '#9b8fff' : '#7c3aed'} strokeWidth={2}
+          strokeLinecap="round" strokeLinejoin="round"
+          style={{ marginBottom: '8px' }}>
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+        <div style={{
+          fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '15px',
+          color: 'var(--text)', letterSpacing: '-0.02em',
+        }}>Long Beach, CA</div>
+        <div style={{
+          fontFamily: 'var(--font-body)', fontSize: '13px',
+          color: 'var(--text-muted)',
+        }}>CSULB &apos;26</div>
+      </motion.div>
+
+      {/* CARD 3 — Availability */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        style={{
+          ...cardBase,
+          gridColumn: '2',
+          gridRow: '2',
+          padding: '20px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          gap: '3px',
+          background: isDark ? 'rgba(16,185,129,0.04)' : 'rgba(16,185,129,0.04)',
+          border: `1px solid ${isDark ? 'rgba(16,185,129,0.14)' : 'rgba(16,185,129,0.16)'}`,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <span style={{
+            width: '8px', height: '8px', borderRadius: '50%',
+            background: '#10b981',
+            boxShadow: '0 0 8px rgba(16,185,129,0.6)',
+            animation: 'pulseDot 2s ease-in-out infinite',
+            flexShrink: 0,
           }} />
           <span style={{
-            fontFamily: 'var(--font-body)', fontSize: '11px',
-            color: '#00ff88', fontWeight: 600, letterSpacing: '0.06em',
-          }}>
-            Available
-          </span>
+            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px',
+            color: '#10b981', letterSpacing: '-0.01em',
+          }}>Available</span>
         </div>
-
-        {/* Bottom frosted bar */}
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0,
-          padding: '16px 20px',
-          background: 'rgba(6,6,15,0.7)',
-          backdropFilter: 'blur(12px)',
-          borderTop: '1px solid rgba(255,255,255,0.08)',
-          zIndex: 3,
-        }}>
-          <div style={{
-            fontFamily: 'var(--font-display)', fontWeight: 600,
-            fontSize: '15px', color: 'var(--text)', letterSpacing: '-0.02em',
-          }}>
-            Brijesh Rana
-          </div>
-          <div style={{
-            fontFamily: 'var(--font-body)', fontSize: '12px',
-            color: 'var(--text-muted)', marginTop: '2px',
-          }}>
-            Software Engineer
-          </div>
-        </div>
+          fontFamily: 'var(--font-body)', fontSize: '12px',
+          color: 'var(--text-muted)', lineHeight: 1.55,
+        }}>Summer 2026<br />Internships</div>
+      </motion.div>
 
-        {/* Floating skill chips */}
-        {[
-          { label: 'React', x: '-60px', y: '25%', delay: '0s' },
-          { label: 'Python', x: 'calc(100% + 14px)', y: '35%', delay: '0.8s' },
-          { label: 'AI/ML', x: '-70px', y: '60%', delay: '1.6s' },
-        ].map((chip) => (
-          <div
-            key={chip.label}
-            style={{
-              position: 'absolute', left: chip.x, top: chip.y,
-              padding: '6px 14px',
-              background: isDark ? 'rgba(14,14,26,0.9)' : 'rgba(255,255,255,0.9)',
-              border: '1px solid var(--border)',
-              borderRadius: '100px',
-              fontFamily: 'var(--font-body)', fontSize: '12px',
-              color: 'var(--text)', fontWeight: 600,
-              backdropFilter: 'blur(10px)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-              zIndex: 4,
-              animation: `float-orbit 6s ease-in-out infinite`,
-              animationDelay: chip.delay,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {chip.label}
-          </div>
-        ))}
-      </div>
+      {/* CARD 4 — Tech marquee */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        style={{
+          ...cardBase,
+          gridColumn: '1 / -1',
+          padding: '14px 0',
+          overflow: 'hidden',
+          maskImage: 'linear-gradient(90deg, transparent, black 12%, black 88%, transparent)',
+          WebkitMaskImage: 'linear-gradient(90deg, transparent, black 12%, black 88%, transparent)',
+        }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <div style={{
+          display: 'flex',
+          animation: 'bentoMarquee 20s linear infinite',
+          animationPlayState: paused ? 'paused' : 'running',
+          width: 'max-content',
+        }}>
+          {doubled.map((tech, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', gap: '7px',
+              padding: '0 20px',
+              borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(91,76,255,0.07)'}`,
+            }}>
+              <span style={{
+                width: '6px', height: '6px', borderRadius: '50%',
+                background: tech.color, flexShrink: 0,
+                boxShadow: `0 0 6px ${tech.color}80`,
+              }} />
+              <span style={{
+                fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600,
+                color: isDark ? 'rgba(240,240,245,0.65)' : '#6b7280',
+                whiteSpace: 'nowrap',
+              }}>{tech.name}</span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 }
@@ -310,14 +413,14 @@ export default function About() {
         }}
           className="about-grid"
         >
-          {/* Left: Avatar */}
+          {/* Left: Bento grid */}
           <motion.div
-            initial={{ opacity: 0, x: -60 }}
+            initial={{ opacity: 0, x: -40 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.1, ease: [0.33, 1, 0.68, 1] }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.33, 1, 0.68, 1] }}
           >
-            <TiltCard>
-              <AvatarFrame isDark={isDark} />
+            <TiltCard intensity={5}>
+              <BentoGrid isDark={isDark} inView={inView} />
             </TiltCard>
           </motion.div>
 
@@ -347,7 +450,7 @@ export default function About() {
                 lineHeight: 1.85,
                 marginBottom: '18px',
               }}>
-                I&apos;m a Computer Science Master&apos;s student at California State University, Long Beach, with a deep focus on full-stack development and AI/ML. I build systems that are fast, intelligent, and elegantly engineered — from real-time collaboration platforms to AI-powered voice agents.
+                I&apos;m a Computer Science Master&apos;s student at CSULB focused on agentic AI systems — software that doesn&apos;t just respond, but reasons, plans, and acts. I build across the full stack: from React UIs and FastAPI services to LLM pipelines and RAG architectures, with a bias toward performance and clean abstractions.
               </p>
               <p style={{
                 fontFamily: 'var(--font-body)',
@@ -355,7 +458,7 @@ export default function About() {
                 color: 'var(--text-muted)',
                 lineHeight: 1.85,
               }}>
-                Previously, I&apos;ve shipped production code at Zluck Solutions and Crest Data Systems, working across React, Python, and cloud infrastructure. I&apos;m always chasing the intersection of cutting-edge AI and bulletproof engineering.
+                I&apos;ve shipped production code at Zluck Solutions and Crest Data Systems, and currently build AI-integrated web systems at ASI, CSULB. My sweet spot is the intersection of autonomous AI and bulletproof engineering — where intelligent software actually ships.
               </p>
             </div>
 
@@ -448,9 +551,22 @@ export default function About() {
           .about-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
         }
         @media (max-width: 640px) {
-          .about-grid > div:first-child { max-width: 320px; margin: 0 auto; }
+          .about-grid > div:first-child { max-width: 100%; margin: 0 auto; }
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 500px) {
+          .bento-card-code { grid-column: 1 / -1 !important; grid-row: auto !important; }
+          .bento-card-marquee { grid-column: 1 / -1 !important; }
+        }
+
+        @keyframes bentoMarquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+
+        @keyframes pulseDot {
+          0%, 100% { transform: scale(1);   opacity: 1;   }
+          50%       { transform: scale(1.5); opacity: 0.5; }
+        }
       `}</style>
     </section>
   );

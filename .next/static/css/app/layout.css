@@ -1149,6 +1149,9 @@ video {
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
 
 /* ═══════════════════════════════════════════════════════
    CSS CUSTOM PROPERTIES — DARK (DEFAULT)
@@ -1274,17 +1277,24 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
 
 /* ═══════════════════════════════════════════════════════
-   SMOOTH THEME TRANSITIONS
+   THEME TRANSITION — color crossfade only while overlay runs
+   The overlay covers instant CSS var changes; no always-on
+   background-color transitions needed (they cause hover jank).
    ═══════════════════════════════════════════════════════ */
-html, body,
-section, div, nav, header, footer, aside, main,
-a, button, span, p, h1, h2, h3, h4, h5, h6 {
+html.theme-changing,
+html.theme-changing body,
+html.theme-changing section,
+html.theme-changing article,
+html.theme-changing nav,
+html.theme-changing header,
+html.theme-changing aside,
+html.theme-changing main {
   transition:
-    background-color 0.45s cubic-bezier(0.4,0,0.2,1),
-    background 0.45s cubic-bezier(0.4,0,0.2,1),
-    color 0.35s cubic-bezier(0.4,0,0.2,1),
-    border-color 0.35s cubic-bezier(0.4,0,0.2,1),
-    box-shadow 0.35s cubic-bezier(0.4,0,0.2,1);
+    background-color 0.55s cubic-bezier(0.4,0,0.2,1),
+    background       0.55s cubic-bezier(0.4,0,0.2,1),
+    color            0.45s cubic-bezier(0.4,0,0.2,1),
+    border-color     0.45s cubic-bezier(0.4,0,0.2,1),
+    box-shadow       0.45s cubic-bezier(0.4,0,0.2,1) !important;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1646,20 +1656,6 @@ html.light .mobile-menu {
   box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 0 20px var(--accent-glow);
 }
 
-/* ═══════════════════════════════════════════════════════
-   THEME RIPPLE REVEAL
-   ═══════════════════════════════════════════════════════ */
-.theme-ripple {
-  position: fixed;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99996;
-  transform: translate(-50%,-50%) scale(0);
-  transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
-}
-.theme-ripple.expanding {
-  transform: translate(-50%,-50%) scale(1);
-}
 
 /* ═══════════════════════════════════════════════════════
    PRELOADER
@@ -1878,6 +1874,81 @@ html.light .section-fade-bottom {
 }
 
 /* ═══════════════════════════════════════════════════════
+   THEME TRANSITION — SHOCKWAVE EFFECTS
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Button pulse on click ── */
+.theme-toggle.btn-clicked {
+  animation: togglePulse 520ms cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes togglePulse {
+  0%   { transform: scale(1);    box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+  25%  { transform: scale(0.75); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  60%  { transform: scale(1.20); box-shadow: 0 8px 40px var(--accent-glow); }
+  100% { transform: scale(1);    box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+}
+
+/* ── Shockwave expanding ring — GPU only (transform + opacity) ── */
+.shockwave-ring,
+.shockwave-ring-2 {
+  position: fixed;
+  z-index: 9997;
+  pointer-events: none;
+  /* Large enough so scale(1) covers the full screen diagonal from any corner */
+  width: 160vmax;
+  height: 160vmax;
+  border-radius: 50%;
+  border: 2px solid;
+  background: transparent;
+  transform: translate(-50%, -50%) scale(0);
+  will-change: transform, opacity;
+}
+.shockwave-ring {
+  animation: shockwaveExpand 900ms cubic-bezier(0.16,1,0.3,1) forwards;
+}
+.shockwave-ring-2 {
+  animation: shockwaveExpand 900ms cubic-bezier(0.16,1,0.3,1) 100ms forwards;
+}
+@keyframes shockwaveExpand {
+  0%   { transform: translate(-50%,-50%) scale(0);    opacity: 1; }
+  40%  { opacity: 0.55; }
+  100% { transform: translate(-50%,-50%) scale(1);    opacity: 0; }
+}
+
+/* ── Particle fly-out ── */
+@keyframes particleFly {
+  0%   { transform: translate(-50%,-50%) scale(1);   opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--fx)), calc(-50% + var(--fy))) scale(0); opacity: 0; }
+}
+
+/* ── Screen flash ── */
+@keyframes screenFlash {
+  0%   { opacity: 0; }
+  18%  { opacity: 0.07; }
+  100% { opacity: 0; }
+}
+
+/* ── Element reactions while transitioning ── */
+.theme-transitioning .main-nav {
+  animation: elementHit 550ms cubic-bezier(0.34,1.56,0.64,1) 160ms both;
+  will-change: transform;
+}
+.theme-transitioning h2 {
+  animation: textPulse 480ms ease 260ms both;
+  will-change: transform;
+}
+@keyframes elementHit {
+  0%   { transform: translateY(0); }
+  45%  { transform: translateY(4px); }
+  100% { transform: translateY(0); }
+}
+@keyframes textPulse {
+  0%   { transform: scale(1); }
+  55%  { transform: scale(1.010); }
+  100% { transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════
    REDUCED MOTION
    ═══════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
@@ -1885,6 +1956,11 @@ html.light .section-fade-bottom {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  /* Instant theme swap — no visual effects */
+  .shockwave-ring,
+  .shockwave-ring::after {
+    display: none !important;
   }
 }
 

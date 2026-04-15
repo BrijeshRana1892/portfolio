@@ -24,28 +24,68 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Brijesh Rana — Software Engineer & AI/ML Developer',
+  metadataBase: new URL('https://brijeshrana.dev'),
+
+  title: {
+    default: 'Brijesh Rana — Software Engineer & AI/ML Developer',
+    template: '%s · Brijesh Rana',
+  },
   description:
-    "Portfolio of Brijesh Rana — CS Master's student at CSULB building intelligent full-stack systems with React, Python, and AI/ML.",
+    'Software Engineer & AI/ML Developer building agentic systems, full-stack applications, and intelligent software. MS Computer Science, CSULB 2026.',
+
   keywords: [
+    'Brijesh Rana',
     'Software Engineer',
+    'AI/ML Engineer',
     'Full Stack Developer',
+    'Agentic AI',
+    'RAG',
+    'LangChain',
     'React',
-    'Python',
-    'AI',
-    'Machine Learning',
     'Next.js',
+    'Python',
+    'FastAPI',
     'CSULB',
+    'Long Beach',
+    'Portfolio',
   ],
-  authors: [{ name: 'Brijesh Rana' }],
+
+  authors: [{ name: 'Brijesh Rana', url: 'https://brijeshrana.dev' }],
+  creator: 'Brijesh Rana',
+  publisher: 'Brijesh Rana',
+  category: 'technology',
+
   openGraph: {
-    title: 'Brijesh Rana — Software Engineer & AI/ML Developer',
-    description:
-      "Portfolio of Brijesh Rana — CS Master's student at CSULB building intelligent full-stack systems.",
     type: 'website',
     locale: 'en_US',
+    url: 'https://brijeshrana.dev',
+    siteName: 'Brijesh Rana',
+    title: 'Brijesh Rana — Software Engineer & AI/ML Developer',
+    description:
+      'Building agentic systems, full-stack apps, and intelligent software. MS CS @ CSULB 2026. Open to Summer 2026 internships.',
   },
-  robots: { index: true, follow: true },
+
+  twitter: {
+    card: 'summary',
+    title: 'Brijesh Rana — Software Engineer & AI/ML Developer',
+    description:
+      'Building agentic systems, full-stack apps, and intelligent software. MS CS @ CSULB 2026.',
+    creator: '@brijeshrana',
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+    },
+  },
+
+  alternates: {
+    canonical: 'https://brijeshrana.dev',
+  },
 };
 
 export const viewport: Viewport = {

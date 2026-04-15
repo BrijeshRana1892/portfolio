@@ -6,23 +6,24 @@ export const meta = {
   name: 'Brijesh Rana',
   title: 'Brijesh Rana — Software Engineer & AI/ML Developer',
   description:
-    'Portfolio of Brijesh Rana — CS Master\'s student at CSULB building intelligent full-stack systems with React, Python, and AI/ML.',
+    'Brijesh Rana — Software Engineer & AI/ML Developer building agentic systems, full-stack applications, and intelligent software. MS Computer Science, CSULB 2026.',
   email: 'Brijesh.Rana-SA@csulb.edu',
   github: 'https://github.com/BrijeshRana1892',
-  linkedin: 'https://linkedin.com/in/brijesh-rana', // TODO: replace with actual LinkedIn URL
+  linkedin: 'https://www.linkedin.com/in/brijesh-tech/', // TODO: replace with actual LinkedIn URL
   location: 'Long Beach, CA',
   status: 'Available for Summer 2026 Internship',
 };
 
 export const roles = [
   'Software Engineer',
-  'AI/ML Developer',
+  'AI/ML Engineer',
   'Full Stack Builder',
-  'CS @ CSULB',
+  'Agentic Systems Dev',
+  'CS @ CSULB \'26',
 ];
 
 export const tagline =
-  'Building intelligent systems at the intersection of performance and elegance.';
+  'Building intelligent agentic systems at the intersection of performance, autonomy, and elegance.';
 
 // ── About stats ─────────────────────────────────────
 export const stats = [
@@ -84,7 +85,7 @@ export const skillCategories = [
   {
     title: 'AI/ML',
     color: '#a855f7',
-    skills: ['PyTorch', 'TensorFlow', 'LangChain', 'OpenAI API'],
+    skills: ['PyTorch', 'TensorFlow', 'LangChain', 'OpenAI API', 'Agentic AI', 'RAG', 'Multimodal AI', 'Prompt Engineering'],
   },
   {
     title: 'Database',
@@ -107,14 +108,14 @@ export const skillCategories = [
 export const projects = [
   {
     id: 1,
-    title: 'AI Voice Sales Agent',
-    slug: 'ai-voice-agent',
+    title: 'AI-Powered Code Review Tool',
+    slug: 'ai-code-review',
     year: '2024',
-    oneLiner: 'An AI agent that conducts real-time voice sales conversations',
+    oneLiner: 'Context-aware code review powered by RAG and GitHub integration',
     description:
-      'Built an intelligent voice sales agent using LLM APIs and WebRTC for real-time audio streaming. Integrated with FastAPI backend for conversation management and analytics. Achieved 40% improvement in simulation accuracy over baseline approaches.',
-    achievement: '↑ 40% Simulation Accuracy',
-    tech: ['Python', 'WebRTC', 'LLM APIs', 'FastAPI'],
+      'A full-stack code review platform that integrates with the GitHub API to pull repositories and analyze code quality using OpenAI API with a RAG pipeline backed by Pinecone — surfacing context-aware, file-level suggestions in real time. Redis caching eliminates redundant API calls across repeated reviews, and the entire application is Dockerized for consistent local-to-production deployment.',
+    achievement: 'Context-aware AI Review',
+    tech: ['React', 'Node.js', 'LangChain', 'RAG', 'OpenAI API', 'Pinecone', 'GitHub API', 'Redis', 'Docker'],
     color: '#00d4ff',
     gradientFrom: '#0066ff',
     gradientTo: '#00d4ff',
@@ -126,27 +127,27 @@ export const projects = [
     title: 'Codetique',
     slug: 'codetique',
     year: '2024',
-    oneLiner: 'Real-time collaborative pair programming in the browser',
+    oneLiner: 'Live collaborative code editor with zero-latency sync',
     description:
-      'A pair programming platform with real-time code synchronization via WebSockets. Features Monaco Editor integration, multi-cursor support, and live execution environment. Built for seamless remote collaboration between developers.',
+      'A browser-native pair programming environment where two developers share a single live session — edits, cursor positions, and selections propagate in under 50ms via a WebSocket-backed CRDT layer. Powered by Monaco Editor with full LSP hints, syntax highlighting, and a sandboxed execution runtime so teams can run and test code without leaving the tab.',
     achievement: 'Real-time Sync < 50ms',
     tech: ['React', 'WebSockets', 'Node.js', 'Monaco Editor'],
     color: '#a855f7',
     gradientFrom: '#6c63ff',
     gradientTo: '#a855f7',
     github: 'https://github.com/BrijeshRana1892',
-    demo: 'https://codetique.vercel.app',
+    demo: 'https://codetique-brown.vercel.app',
   },
   {
     id: 3,
     title: 'Campus AI Dashboard',
     slug: 'campus-ai',
     year: '2024',
-    oneLiner: 'ML-powered analytics dashboard for campus resource optimization',
+    oneLiner: 'ML-powered analytics that surfaces campus resource signals',
     description:
-      'An intelligent dashboard that uses machine learning models to analyze and predict campus resource utilization. Built with React frontend and Python ML pipeline, providing actionable insights for university administrators.',
+      'A full-stack intelligence layer for university operations — ingesting scheduling, foot-traffic, and utilization data into a Python ML pipeline that forecasts demand and surfaces anomalies before they become problems. The React dashboard gives administrators interactive drill-downs, trend overlays, and exportable reports backed by a FastAPI data service.',
     achievement: 'ML-Powered Insights',
-    tech: ['React', 'Python', 'ML Models', 'Data Viz'],
+    tech: ['React', 'Python', 'FastAPI', 'ML Models', 'Data Viz'],
     color: '#4ade80',
     gradientFrom: '#059669',
     gradientTo: '#4ade80',
@@ -158,11 +159,11 @@ export const projects = [
     title: 'Digital Flipbook Platform',
     slug: 'flipbook',
     year: '2024',
-    oneLiner: 'Interactive digital publication platform with page-turn physics',
+    oneLiner: 'Static content transformed into cinematic digital publications',
     description:
-      'A publishing platform that transforms static content into interactive digital flipbooks with realistic page-turn animations. Features responsive layouts, bookmarking, and analytics tracking for reader engagement.',
+      'A publishing platform that breathes life into PDFs and static layouts — turning them into richly animated digital flipbooks with GPU-accelerated page-curl physics rendered on Canvas. Readers get bookmarking, deep-link sharing, and a responsive layout that adapts from mobile to widescreen, while publishers see per-page engagement analytics through a Node.js event pipeline.',
     achievement: 'Interactive Publishing',
-    tech: ['React', 'Canvas API', 'Node.js'],
+    tech: ['React', 'Canvas API', 'Node.js', 'WebGL'],
     color: '#fb923c',
     gradientFrom: '#d97706',
     gradientTo: '#fb923c',
@@ -175,7 +176,7 @@ export const projects = [
 export const experiences = [
   {
     company: 'Associated Students Inc., CSULB',
-    role: 'Technical Staff',
+    role: 'Software Engineer',
     location: 'Long Beach, CA',
     period: '2025 — Present',
     color: '#00d4ff',
@@ -224,8 +225,8 @@ export const education = [
     color: '#38bdf8',
   },
   {
-    institution: 'University in India',
-    degree: 'BS in Computer Science & Engineering',
+    institution: 'Charotar University of Science and Technology',  // TODO: replace with actual institution
+    degree: 'BE in Computer Science & Engineering',
     period: 'Graduated 2023',
     location: 'India',
     focus: 'Software Engineering',
