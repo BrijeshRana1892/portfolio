@@ -1,0 +1,14 @@
+{
+  "components/Hero.tsx -> ./three/FocalShape": {
+    "id": "components/Hero.tsx -> ./three/FocalShape",
+    "files": [
+      "static/chunks/_app-pages-browser_components_three_FocalShape_tsx.js"
+    ]
+  },
+  "components/Hero.tsx -> ./three/HeroScene": {
+    "id": "components/Hero.tsx -> ./three/HeroScene",
+    "files": [
+      "static/chunks/_app-pages-browser_components_three_HeroScene_tsx.js"
+    ]
+  }
+}
