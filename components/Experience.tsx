@@ -278,7 +278,30 @@ function ExpCardContent({
         </span>
       </div>
 
-      {/* Row 4: Tech pills */}
+      {/* Row 4: Bullet points */}
+      <ul style={{
+        listStyle: 'none', padding: 0, margin: '0 0 18px 0',
+        display: 'flex', flexDirection: 'column', gap: '9px',
+      }}>
+        {exp.bullets.map((bullet, i) => (
+          <li key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+            <span style={{
+              width: '5px', height: '5px', borderRadius: '50%',
+              background: exp.color, flexShrink: 0, marginTop: '7px',
+              boxShadow: `0 0 6px ${exp.color}80`,
+            }} />
+            <span style={{
+              fontFamily: 'var(--font-body)', fontSize: '13.5px',
+              color: isDark ? 'rgba(240,240,245,0.72)' : '#374151',
+              lineHeight: 1.65,
+            }}>
+              {bullet}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Row 5: Tech pills */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: '6px',
         justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
@@ -361,10 +384,26 @@ function EducationCard({
       </div>
       <div style={{
         fontFamily: 'var(--font-body)', fontSize: '13px',
-        color: 'var(--text-muted)',
+        color: 'var(--text-muted)', marginBottom: '6px',
       }}>
         {edu.period} · {edu.location}
       </div>
+      {'gpa' in edu && (
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          padding: '3px 10px',
+          background: `${edu.color}14`,
+          border: `1px solid ${edu.color}28`,
+          borderRadius: '100px',
+        }}>
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: '11px',
+            color: edu.color, fontWeight: 600, letterSpacing: '0.06em',
+          }}>
+            GPA {(edu as typeof edu & { gpa: string }).gpa}
+          </span>
+        </div>
+      )}
     </motion.div>
   );
 }

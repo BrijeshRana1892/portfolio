@@ -211,18 +211,22 @@ function DeviceMockup({
 // ── Single project panel ─────────────────────────────────────────
 function ProjectPanel({
   project,
+  isActive,
   isDark,
 }: {
   project: (typeof projects)[0];
+  isActive: boolean;
   isDark: boolean;
 }) {
   return (
+    <AnimatePresence mode="wait">
+      {isActive && (
         <motion.div
           key={project.id}
-          initial={{ opacity: 0, x: 60 }}
+          initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -60 }}
-          transition={{ duration: 0.55, ease: [0.33, 1, 0.68, 1] }}
+          exit={{ opacity: 0, x: -40 }}
+          transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
@@ -398,6 +402,8 @@ function ProjectPanel({
             <DeviceMockup project={project} isDark={isDark} />
           </motion.div>
         </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -534,14 +540,15 @@ export default function Projects() {
         </div>
 
         {/* Project panel */}
-        <div style={{ position: 'relative' }}>
-          <AnimatePresence mode="popLayout">
-            <ProjectPanel
-              key={proj.id}
-              project={proj}
-              isDark={isDark}
-            />
-          </AnimatePresence>
+        <div style={{ position: 'relative', minHeight: 'clamp(520px, 62vh, 680px)', overflow: 'hidden' }}>
+          {projects.map((p, i) => (
+            <div
+              key={p.id}
+              style={{ position: 'absolute', inset: 0, display: i === active ? 'block' : 'none' }}
+            >
+              <ProjectPanel project={p} isActive={i === active} isDark={isDark} />
+            </div>
+          ))}
         </div>
 
         {/* Prev/Next arrows */}
