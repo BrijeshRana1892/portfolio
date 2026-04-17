@@ -77,6 +77,12 @@ html.light {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html.has-magnetic-cursor,
+html.has-magnetic-cursor *,
+html.has-magnetic-cursor *::before,
+html.has-magnetic-cursor *::after {
   cursor: none !important;
 }
 
@@ -350,25 +356,55 @@ html.light .scroll-progress {
   top: 0; left: 0; right: 0;
   z-index: 1000;
   padding: 20px 48px;
+  margin: 0 auto;
+  max-width: 100%;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: transparent;
-  transition: background 0.4s ease, backdrop-filter 0.4s ease, padding 0.3s ease, border-color 0.3s ease;
+  border: 1px solid transparent;
+  transition:
+    background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    max-width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    top 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .main-nav.scrolled {
-  padding: 14px 48px;
-  background: rgba(6,6,15,0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+  top: 14px;
+  padding: 10px 22px;
+  max-width: min(880px, calc(100% - 32px));
+  left: 16px;
+  right: 16px;
+  border-radius: 100px;
+  background: rgba(10, 10, 22, 0.72);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(108, 99, 255, 0.08) inset;
 }
 html.light .main-nav.scrolled {
-  background: rgba(248, 248, 252, 0.88);
-  box-shadow: 0 1px 0 rgba(91, 76, 255, 0.08), 0 2px 8px rgba(12, 11, 29, 0.04);
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(91, 76, 255, 0.12);
+  box-shadow:
+    0 10px 30px rgba(12, 11, 29, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
 }
 @media (max-width: 768px) {
-  .main-nav, .main-nav.scrolled { padding: 16px 20px; }
+  .main-nav { padding: 16px 20px; }
+  .main-nav.scrolled {
+    padding: 10px 18px;
+    max-width: calc(100% - 24px);
+    left: 12px;
+    right: 12px;
+    top: 10px;
+  }
 }
 
 .nav-logo {

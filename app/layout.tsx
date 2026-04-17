@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Inter, JetBrains_Mono } from 'next/font/google';
+import MagneticCursor from '@/components/MagneticCursor';
+import ScrollSkew from '@/components/ScrollSkew';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -66,7 +68,7 @@ export const metadata: Metadata = {
   },
 
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Brijesh Rana — Software Engineer & AI/ML Developer',
     description:
       'Building agentic systems, full-stack apps, and intelligent software. MS CS @ CSULB 2026.',
@@ -98,16 +100,54 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Apply theme before first paint to avoid flash */}
+        {/* Apply theme before first paint to avoid flash. Default: dark. Light only if user explicitly opted in. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.add('light')}else if(!t&&window.matchMedia('(prefers-color-scheme: light)').matches){document.documentElement.classList.add('light')}}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.add('light')}}catch(e){}})()`,
+          }}
+        />
+        {/* JSON-LD: Person schema for rich search results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Person',
+              name: 'Brijesh Rana',
+              url: 'https://brijeshrana.dev',
+              jobTitle: 'Software Engineer & AI/ML Developer',
+              description:
+                'Software Engineer & AI/ML Developer building agentic systems, full-stack applications, and intelligent software.',
+              email: 'rbrijesh1892@gmail.com',
+              alumniOf: {
+                '@type': 'CollegeOrUniversity',
+                name: 'California State University, Long Beach',
+              },
+              sameAs: [
+                'https://github.com/brijesh-tech',
+                'https://www.linkedin.com/in/brijesh-tech/',
+              ],
+              knowsAbout: [
+                'Software Engineering',
+                'Artificial Intelligence',
+                'Machine Learning',
+                'Agentic AI',
+                'Retrieval-Augmented Generation',
+                'Full-Stack Development',
+                'React',
+                'Next.js',
+                'Python',
+                'FastAPI',
+              ],
+            }),
           }}
         />
       </head>
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
       >
+        <MagneticCursor />
+        <ScrollSkew />
         {children}
       </body>
     </html>

@@ -2,7 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { stats, aboutSkills } from '@/lib/data';
+
+const AboutScene = dynamic(() => import('./three/AboutScene'), {
+  ssr: false,
+  loading: () => null,
+});
 
 function useDarkMode() {
   const [isDark, setIsDark] = useState(true);
@@ -369,6 +375,20 @@ export default function About() {
   const inView = useInView(sectionRef, { once: true, margin: '-100px' });
   const statsInView = useInView(statsRef, { once: true, margin: '-60px' });
   const isDark = useDarkMode();
+  const [mounted, setMounted] = useState(false);
+  const mouse = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    setMounted(true);
+    const onMove = (e: MouseEvent) => {
+      mouse.current = {
+        x: (e.clientX / window.innerWidth) * 2 - 1,
+        y: -(e.clientY / window.innerHeight) * 2 + 1,
+      };
+    };
+    window.addEventListener('mousemove', onMove, { passive: true });
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
 
   return (
     <section
@@ -391,6 +411,30 @@ export default function About() {
           pointerEvents: 'none', zIndex: 0,
         }}
       />
+
+      {/* 3D torus knot backdrop — offscreen accent, not overlapping text */}
+      {mounted && (
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: '-4%',
+            right: '-22%',
+            width: 'min(440px, 38vw)',
+            height: 'min(440px, 38vw)',
+            pointerEvents: 'none',
+            zIndex: 0,
+            opacity: isDark ? 0.38 : 0.28,
+            maskImage:
+              'radial-gradient(circle at 70% 50%, #000 35%, transparent 72%)',
+            WebkitMaskImage:
+              'radial-gradient(circle at 70% 50%, #000 35%, transparent 72%)',
+          }}
+          className="about-3d-backdrop"
+        >
+          <AboutScene isDark={isDark} mouse={mouse} />
+        </div>
+      )}
 
       <div className="container-xl" style={{ position: 'relative', zIndex: 1 }}>
 
@@ -430,7 +474,8 @@ export default function About() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.9, delay: 0.2, ease: [0.33, 1, 0.68, 1] }}
           >
-            <h2 style={{
+            <h2
+              style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(30px, 4.5vw, 54px)',
               fontWeight: 700,
@@ -438,7 +483,8 @@ export default function About() {
               lineHeight: 1.1,
               marginBottom: '32px',
             }}>
-              Building the Future,{' '}
+              Building the Future,
+              <br />
               <span className="gradient-text">One Line at a Time</span>
             </h2>
 
@@ -549,6 +595,7 @@ export default function About() {
       <style>{`
         @media (max-width: 900px) {
           .about-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
+          .about-3d-backdrop { display: none !important; }
         }
         @media (max-width: 640px) {
           .about-grid > div:first-child { max-width: 100%; margin: 0 auto; }

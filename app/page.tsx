@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Preloader from '@/components/Preloader';
-import CustomCursor from '@/components/CustomCursor';
 import ScrollProgress from '@/components/ScrollProgress';
 import SmoothScroll from '@/components/SmoothScroll';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -31,7 +30,6 @@ export default function Home() {
 
       {!loading && (
         <>
-          <CustomCursor />
           <ScrollProgress />
           <ThemeToggle />
 

@@ -236,12 +236,9 @@ export default function Skills() {
           <span>02 — Skills</span>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <h2 style={{
+        <div>
+          <h2
+            style={{
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(36px, 5.5vw, 72px)',
             fontWeight: 700,
@@ -251,13 +248,18 @@ export default function Skills() {
           }}>
             My Tech Arsenal
           </h2>
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '17px', color: 'var(--text-muted)', maxWidth: '480px',
-          }}>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.55 }}
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '17px', color: 'var(--text-muted)', maxWidth: '480px',
+            }}
+          >
             The tools I use to build things that matter
-          </p>
-        </motion.div>
+          </motion.p>
+        </div>
       </div>
 
       {/* Marquee rows — 3 rows */}

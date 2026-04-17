@@ -445,10 +445,7 @@ export default function Experience() {
           >
             <span>04 — Experience</span>
           </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.1 }}
+          <h2
             style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(32px, 5vw, 64px)',
@@ -458,8 +455,8 @@ export default function Experience() {
               marginBottom: '80px',
             }}
           >
-            Where I&apos;ve Worked
-          </motion.h2>
+            Where I’ve Worked
+          </h2>
         </div>
 
         {/* Timeline */}

@@ -1,4 +1,16 @@
 {
+  "components/About.tsx -> ./three/AboutScene": {
+    "id": "components/About.tsx -> ./three/AboutScene",
+    "files": [
+      "static/chunks/_app-pages-browser_components_three_AboutScene_tsx.js"
+    ]
+  },
+  "components/Contact.tsx -> ./three/ContactScene": {
+    "id": "components/Contact.tsx -> ./three/ContactScene",
+    "files": [
+      "static/chunks/_app-pages-browser_components_three_ContactScene_tsx.js"
+    ]
+  },
   "components/Hero.tsx -> ./three/FocalShape": {
     "id": "components/Hero.tsx -> ./three/FocalShape",
     "files": [
@@ -10,5 +22,13 @@
     "files": [
       "static/chunks/_app-pages-browser_components_three_HeroScene_tsx.js"
     ]
+  },
+  "node_modules/@react-three/drei/core/VideoTexture.js -> hls.js": {
+    "id": "node_modules/@react-three/drei/core/VideoTexture.js -> hls.js",
+    "files": []
+  },
+  "node_modules/@react-three/drei/web/FaceLandmarker.js -> @mediapipe/tasks-vision": {
+    "id": "node_modules/@react-three/drei/web/FaceLandmarker.js -> @mediapipe/tasks-vision",
+    "files": []
   }
 }

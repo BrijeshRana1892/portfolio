@@ -36,43 +36,44 @@ const ROLE_COLORS_LIGHT = ['#5b4cff', '#7c3aed', '#059669', '#d97706'];
 
 function TypewriterCycle({ words, isDark }: { words: string[]; isDark: boolean }) {
   const [idx, setIdx] = useState(0);
-  const [display, setDisplay] = useState('');
-  const [deleting, setDeleting] = useState(false);
-  const [pause, setPause] = useState(false);
 
   useEffect(() => {
-    if (pause) {
-      const t = setTimeout(() => { setPause(false); setDeleting(true); }, 2000);
-      return () => clearTimeout(t);
-    }
-    const target = words[idx];
-    if (!deleting) {
-      if (display.length < target.length) {
-        const t = setTimeout(() => setDisplay(target.slice(0, display.length + 1)), 80);
-        return () => clearTimeout(t);
-      } else {
-        setPause(true);
-      }
-    } else {
-      if (display.length > 0) {
-        const t = setTimeout(() => setDisplay(display.slice(0, -1)), 40);
-        return () => clearTimeout(t);
-      } else {
-        setDeleting(false);
-        setIdx((i) => (i + 1) % words.length);
-      }
-    }
-  }, [display, deleting, pause, idx, words]);
+    const t = setInterval(() => setIdx((i) => (i + 1) % words.length), 2800);
+    return () => clearInterval(t);
+  }, [words.length]);
 
   const colors = isDark ? ROLE_COLORS_DARK : ROLE_COLORS_LIGHT;
+  const current = words[idx];
+  const letters = Array.from(current);
+
   return (
-    <span style={{ color: colors[idx % colors.length], transition: 'color 0.4s ease' }}>
-      {display}
-      <motion.span
-        animate={{ opacity: [1, 0] }}
-        transition={{ repeat: Infinity, duration: 0.55, ease: 'linear' }}
-        style={{ display: 'inline-block', marginLeft: '1px', fontWeight: 300 }}
-      >|</motion.span>
+    <span
+      key={idx}
+      style={{
+        color: colors[idx % colors.length],
+        transition: 'color 0.5s ease',
+        display: 'inline-block',
+        overflow: 'hidden',
+        verticalAlign: 'bottom',
+        lineHeight: 1.2,
+        paddingBottom: '0.05em',
+      }}
+    >
+      {letters.map((ch, i) => (
+        <motion.span
+          key={`${idx}-${i}`}
+          initial={{ y: '110%', opacity: 0, filter: 'blur(6px)' }}
+          animate={{ y: '0%', opacity: 1, filter: 'blur(0px)' }}
+          transition={{
+            delay: i * 0.03,
+            duration: 0.55,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          style={{ display: 'inline-block', whiteSpace: 'pre' }}
+        >
+          {ch === ' ' ? '\u00A0' : ch}
+        </motion.span>
+      ))}
     </span>
   );
 }

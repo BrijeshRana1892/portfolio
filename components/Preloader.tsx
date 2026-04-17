@@ -128,8 +128,12 @@ function PreloaderCanvas({ onCanvasDone }: { onCanvasDone: () => void }) {
     let done = false;
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#06060f';
+      // Motion-blur trails during explode/shatter — sharp clear during attract/hold
+      if (phase === 'explode' || phase === 'shatter') {
+        ctx.fillStyle = 'rgba(6,6,15,0.22)';
+      } else {
+        ctx.fillStyle = '#06060f';
+      }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Phase transitions
@@ -154,6 +158,13 @@ function PreloaderCanvas({ onCanvasDone }: { onCanvasDone: () => void }) {
         }, 350);
       }
 
+      // RGB glitch window: 3 short bursts inside hold phase
+      const inGlitch =
+        phase === 'hold' &&
+        ((tick >= 160 && tick <= 163) ||
+          (tick >= 178 && tick <= 182) ||
+          (tick >= 192 && tick <= 196));
+
       particles.forEach((p) => {
         if (phase === 'shatter') {
           p.x += p.vx;
@@ -164,8 +175,35 @@ function PreloaderCanvas({ onCanvasDone }: { onCanvasDone: () => void }) {
         } else {
           p.update(phase === 'attract' ? tick - 40 : tick);
         }
-        if (p.alpha > 0.02) p.draw(ctx);
+        if (p.alpha <= 0.02) return;
+
+        if (inGlitch) {
+          const jitter = (Math.random() - 0.5) * 4;
+          // Cyan ghost
+          ctx.beginPath();
+          ctx.arc(p.x - 3 + jitter, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = '#00f0ff';
+          ctx.globalAlpha = p.alpha * 0.55;
+          ctx.fill();
+          // Magenta ghost
+          ctx.beginPath();
+          ctx.arc(p.x + 3 - jitter, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = '#ff2dd1';
+          ctx.globalAlpha = p.alpha * 0.55;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+        p.draw(ctx);
       });
+
+      // Horizontal slice displacement on glitch frames
+      if (inGlitch && phase === 'hold') {
+        const sliceH = 6 + Math.random() * 14;
+        const sliceY = cy - 60 + Math.random() * 120;
+        const offset = (Math.random() - 0.5) * 22;
+        const img = ctx.getImageData(0, sliceY, canvas.width, sliceH);
+        ctx.putImageData(img, offset, sliceY);
+      }
 
       // Bloom glow on attract/hold
       if ((phase === 'attract' || phase === 'hold') && tick > 80) {
@@ -194,10 +232,22 @@ function PreloaderCanvas({ onCanvasDone }: { onCanvasDone: () => void }) {
   );
 }
 
+const BOOT_LOG = [
+  '> booting neural kernel...',
+  '> compiling shaders [ok]',
+  '> linking experiences[4]',
+  '> hydrating projects[6]',
+  '> warming AI modules...',
+  '> calibrating cursor field',
+  '> streaming assets [98%]',
+  '> portfolio online.',
+];
+
 export default function Preloader({ onComplete }: PreloaderProps) {
   const [phase, setPhase] = useState<'canvas' | 'text' | 'exit' | 'done' | string>('canvas');
   const [count, setCount] = useState(0);
   const [typed, setTyped] = useState('');
+  const [bootLines, setBootLines] = useState<string[]>([]);
 
   const ROLE_TEXT = 'SOFTWARE ENGINEER';
 
@@ -230,6 +280,18 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     return () => { clearInterval(id); clearTimeout(delay); };
   }, [phase]);
 
+  // Boot log streaming during text phase
+  useEffect(() => {
+    if (phase !== 'text') return;
+    let idx = 0;
+    const id = setInterval(() => {
+      setBootLines((prev) => (idx < BOOT_LOG.length ? [...prev, BOOT_LOG[idx]] : prev));
+      idx++;
+      if (idx >= BOOT_LOG.length) clearInterval(id);
+    }, 220);
+    return () => clearInterval(id);
+  }, [phase]);
+
   // Begin exit when count hits 100
   useEffect(() => {
     if (count < 100) return;
@@ -257,6 +319,53 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           {/* Particle canvas (always rendered; fades out after exit) */}
           <PreloaderCanvas onCanvasDone={handleCanvasDone} />
 
+          {/* CRT scanlines + noise overlay */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 15,
+              pointerEvents: 'none',
+              mixBlendMode: 'overlay',
+              opacity: 0.35,
+              background: `repeating-linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.05) 0px,
+                rgba(255,255,255,0.05) 1px,
+                transparent 1px,
+                transparent 3px
+              )`,
+            }}
+          />
+          <div
+            aria-hidden
+            className="preloader-scanline"
+            style={{
+              position: 'absolute',
+              left: 0, right: 0,
+              height: '120px',
+              zIndex: 16,
+              pointerEvents: 'none',
+              background: 'linear-gradient(to bottom, transparent, rgba(0,212,255,0.06) 50%, transparent)',
+              mixBlendMode: 'screen',
+            }}
+          />
+          <div
+            aria-hidden
+            className="preloader-noise"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 17,
+              pointerEvents: 'none',
+              opacity: 0.06,
+              mixBlendMode: 'overlay',
+              backgroundImage:
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+            }}
+          />
+
           {/* Text overlay on top of canvas */}
           <AnimatePresence>
             {phase === 'text' && (
@@ -267,6 +376,71 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 transition={{ duration: 0.4 }}
                 style={{ position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none' }}
               >
+                {/* HUD corner brackets */}
+                {(['tl', 'tr', 'bl', 'br'] as const).map((pos, i) => (
+                  <motion.span
+                    key={pos}
+                    initial={{ opacity: 0, scale: 0.4 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.1 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: 'absolute',
+                      width: '44px',
+                      height: '44px',
+                      borderColor: 'rgba(108,99,255,0.55)',
+                      borderStyle: 'solid',
+                      borderWidth: 0,
+                      ...(pos === 'tl' && { top: 32, left: 32, borderTopWidth: 1.5, borderLeftWidth: 1.5 }),
+                      ...(pos === 'tr' && { top: 32, right: 32, borderTopWidth: 1.5, borderRightWidth: 1.5 }),
+                      ...(pos === 'bl' && { bottom: 32, left: 32, borderBottomWidth: 1.5, borderLeftWidth: 1.5 }),
+                      ...(pos === 'br' && { bottom: 32, right: 32, borderBottomWidth: 1.5, borderRightWidth: 1.5 }),
+                    }}
+                  />
+                ))}
+
+                {/* Top progress bar synced with counter */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0, left: 0, right: 0,
+                  height: '2px',
+                  background: 'rgba(255,255,255,0.06)',
+                }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${count}%`,
+                    background: 'linear-gradient(90deg, #6c63ff, #00d4ff)',
+                    boxShadow: '0 0 12px rgba(0,212,255,0.6)',
+                    transition: 'width 0.12s linear',
+                  }} />
+                </div>
+
+                {/* Top-left status label */}
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 0.78, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.25 }}
+                  style={{
+                    position: 'absolute',
+                    top: '42px', left: '90px',
+                    fontFamily: 'var(--font-mono, monospace)',
+                    fontSize: '11px',
+                    color: 'rgba(255,255,255,0.55)',
+                    letterSpacing: '0.32em',
+                    textTransform: 'uppercase',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                  }}
+                >
+                  <span style={{
+                    width: '6px', height: '6px', borderRadius: '50%',
+                    background: '#00ff88',
+                    boxShadow: '0 0 8px rgba(0,255,136,0.8)',
+                    animation: 'preloaderPulse 1.4s ease-in-out infinite',
+                  }} />
+                  Initializing Portfolio
+                </motion.div>
+
                 {/* Typewriter role text */}
                 <div style={{
                   position: 'absolute',
@@ -285,6 +459,32 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                     transition={{ repeat: Infinity, duration: 0.5 }}
                     style={{ display: 'inline-block', marginLeft: '2px' }}
                   >|</motion.span>
+                </div>
+
+                {/* Streaming boot log — bottom-left */}
+                <div
+                  className="preloader-bootlog"
+                  style={{
+                    position: 'absolute',
+                    bottom: '42px', left: '90px',
+                    fontFamily: 'var(--font-mono, monospace)',
+                    fontSize: '11px',
+                    color: 'rgba(0,255,136,0.72)',
+                    lineHeight: 1.7,
+                    letterSpacing: '0.04em',
+                    maxWidth: '280px',
+                  }}
+                >
+                  {bootLines.map((line, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: i === bootLines.length - 1 ? 1 : 0.5, x: 0 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      {line}
+                    </motion.div>
+                  ))}
                 </div>
 
                 {/* Rolling counter bottom-right */}
@@ -317,21 +517,81 @@ export default function Preloader({ onComplete }: PreloaderProps) {
             )}
           </AnimatePresence>
 
-          {/* Wipe out: clip-path circle reveal on exit */}
+          {/* Wipe out: diagonal curtain split into two panels */}
           <AnimatePresence>
             {phase === 'exit' && (
-              <motion.div
-                initial={{ clipPath: 'circle(0% at 50% 50%)' }}
-                animate={{ clipPath: 'circle(150% at 50% 50%)' }}
-                transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
-                style={{
-                  position: 'absolute', inset: 0,
-                  background: '#06060f',
-                  zIndex: 20,
-                }}
-              />
+              <>
+                <motion.div
+                  initial={{ y: 0 }}
+                  animate={{ y: '-102%' }}
+                  transition={{ duration: 0.95, ease: [0.76, 0, 0.24, 1] }}
+                  style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0,
+                    height: '50.5%',
+                    background: '#06060f',
+                    zIndex: 20,
+                    clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 90px))',
+                  }}
+                />
+                <motion.div
+                  initial={{ y: 0 }}
+                  animate={{ y: '102%' }}
+                  transition={{ duration: 0.95, ease: [0.76, 0, 0.24, 1] }}
+                  style={{
+                    position: 'absolute',
+                    bottom: 0, left: 0, right: 0,
+                    height: '50.5%',
+                    background: '#06060f',
+                    zIndex: 20,
+                    clipPath: 'polygon(0 90px, 100% 0, 100% 100%, 0 100%)',
+                  }}
+                />
+                {/* Accent line flash along the split */}
+                <motion.div
+                  initial={{ opacity: 0.9, scaleX: 0 }}
+                  animate={{ opacity: [0.9, 0.9, 0], scaleX: 1 }}
+                  transition={{ duration: 0.95, ease: [0.76, 0, 0.24, 1] }}
+                  style={{
+                    position: 'absolute',
+                    top: '50%', left: 0, right: 0,
+                    height: '1.5px',
+                    transformOrigin: 'left center',
+                    background: 'linear-gradient(90deg, transparent, #00d4ff, #6c63ff, transparent)',
+                    boxShadow: '0 0 18px rgba(0,212,255,0.7)',
+                    zIndex: 21,
+                  }}
+                />
+              </>
             )}
           </AnimatePresence>
+
+          <style>{`
+            @keyframes preloaderPulse {
+              0%, 100% { transform: scale(1);   opacity: 1; }
+              50%       { transform: scale(1.4); opacity: 0.55; }
+            }
+            @keyframes preloaderScan {
+              0%   { transform: translateY(-20vh); }
+              100% { transform: translateY(120vh); }
+            }
+            .preloader-scanline {
+              animation: preloaderScan 5.5s linear infinite;
+            }
+            @keyframes preloaderNoise {
+              0%   { transform: translate(0, 0); }
+              25%  { transform: translate(-3%, 2%); }
+              50%  { transform: translate(2%, -2%); }
+              75%  { transform: translate(-2%, -3%); }
+              100% { transform: translate(0, 0); }
+            }
+            .preloader-noise {
+              animation: preloaderNoise 0.45s steps(4) infinite;
+            }
+            @media (max-width: 600px) {
+              .preloader-bootlog { display: none !important; }
+            }
+          `}</style>
         </motion.div>
       )}
     </AnimatePresence>

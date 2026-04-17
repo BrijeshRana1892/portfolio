@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { meta } from '@/lib/data';
+import Magnetic from './Magnetic';
+
+const ContactScene = dynamic(() => import('./three/ContactScene'), { ssr: false });
 
 function useDarkMode() {
   const [isDark, setIsDark] = useState(true);
@@ -96,6 +100,7 @@ function SocialLink({
 }) {
   const [hovered, setHovered] = useState(false);
   return (
+    <Magnetic strength={0.3} radius={90}>
     <a
       href={href}
       target="_blank"
@@ -127,6 +132,7 @@ function SocialLink({
       {icon}
       {label}
     </a>
+    </Magnetic>
   );
 }
 
@@ -135,6 +141,19 @@ export default function Contact() {
   const inView = useInView(sectionRef, { once: true, margin: '-80px' });
   const isDark = useDarkMode();
   const [copied, setCopied] = useState(false);
+  const mouse = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const onMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.current.y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+    };
+    el.addEventListener('mousemove', onMove);
+    return () => el.removeEventListener('mousemove', onMove);
+  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(meta.email).then(() => {
@@ -221,11 +240,25 @@ export default function Contact() {
         )}
       </div>
 
+      {/* 3D constellation scene */}
+      <div
+        className="contact-3d-layer"
+        style={{
+          position: 'absolute', inset: 0, zIndex: 2,
+          pointerEvents: 'auto',
+          opacity: isDark ? 0.85 : 0.50,
+          maskImage: 'radial-gradient(ellipse 45% 38% at 50% 50%, transparent 0%, rgba(0,0,0,0.25) 35%, #000 65%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 45% 38% at 50% 50%, transparent 0%, rgba(0,0,0,0.25) 35%, #000 65%)',
+        }}
+      >
+        <ContactScene isDark={isDark} mouse={mouse} />
+      </div>
+
       {/* Film grain */}
       <div
         aria-hidden
         style={{
-          position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
+          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
           backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
           opacity: 0.025,
         }}
@@ -318,6 +351,7 @@ export default function Contact() {
           transition={{ delay: 0.75, duration: 0.6 }}
           style={{ position: 'relative', marginBottom: '48px' }}
         >
+          <Magnetic strength={0.4} radius={120}>
           <button
             onClick={handleCopy}
             style={{
@@ -343,6 +377,7 @@ export default function Contact() {
           >
             {meta.email}
           </button>
+          </Magnetic>
 
           {/* Copied toast */}
           <motion.div
@@ -461,6 +496,12 @@ export default function Contact() {
       }}>
         Designed & built by Brijesh Rana · {new Date().getFullYear()}
       </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .contact-3d-layer { display: none !important; }
+        }
+      `}</style>
     </section>
   );
 }

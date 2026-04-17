@@ -3,6 +3,9 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { projects } from '@/lib/data';
+import SplitReveal from './SplitReveal';
+import ProjectShader from './ProjectShader';
+import { useReducedMotionPref } from '@/lib/useReducedMotion';
 
 function useDarkMode() {
   const [isDark, setIsDark] = useState(true);
@@ -20,9 +23,11 @@ function useDarkMode() {
 function DeviceMockup({
   project,
   isDark,
+  reducedMotion,
 }: {
   project: (typeof projects)[0];
   isDark: boolean;
+  reducedMotion: boolean;
 }) {
   const [tiltX, setTiltX] = useState(0);
   const [tiltY, setTiltY] = useState(0);
@@ -80,6 +85,16 @@ function DeviceMockup({
             flexDirection: 'column', gap: '12px',
             overflow: 'hidden',
           }}>
+            {/* Animated shader gradient */}
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <ProjectShader
+                colorFrom={project.gradientFrom}
+                colorTo={project.gradientTo}
+                accent={project.color}
+                intensity={1.0}
+                reducedMotion={reducedMotion}
+              />
+            </div>
             {/* Screen content */}
             <div style={{
               position: 'absolute', inset: 0,
@@ -213,10 +228,12 @@ function ProjectPanel({
   project,
   isActive,
   isDark,
+  reducedMotion,
 }: {
   project: (typeof projects)[0];
   isActive: boolean;
   isDark: boolean;
+  reducedMotion: boolean;
 }) {
   return (
     <AnimatePresence mode="wait">
@@ -399,7 +416,7 @@ function ProjectPanel({
             transition={{ delay: 0.15, duration: 0.7, ease: [0.33, 1, 0.68, 1] }}
             style={{ position: 'relative' }}
           >
-            <DeviceMockup project={project} isDark={isDark} />
+            <DeviceMockup project={project} isDark={isDark} reducedMotion={reducedMotion} />
           </motion.div>
         </motion.div>
       )}
@@ -411,6 +428,7 @@ export default function Projects() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef, { once: true, margin: '-100px' });
   const isDark = useDarkMode();
+  const reducedMotion = useReducedMotionPref();
   const [active, setActive] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -481,10 +499,8 @@ export default function Projects() {
             >
               <span>03 — Projects</span>
             </motion.div>
-            <motion.h2
-              initial={{ opacity: 0, y: 24 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.1 }}
+            <h2
+              data-scroll-skew
               style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: 'clamp(32px, 5vw, 64px)',
@@ -493,8 +509,14 @@ export default function Projects() {
                 lineHeight: 1.05,
               }}
             >
-              Things I&apos;ve Built
-            </motion.h2>
+              <SplitReveal
+                text="Things I’ve Built"
+                variant="letters"
+                stagger={0.028}
+                duration={0.8}
+                delay={0.15}
+              />
+            </h2>
           </div>
 
           {/* Progress indicator */}
@@ -540,13 +562,14 @@ export default function Projects() {
         </div>
 
         {/* Project panel */}
-        <div style={{ position: 'relative', minHeight: 'clamp(520px, 62vh, 680px)', overflow: 'hidden' }}>
+        <div className="project-stage">
           {projects.map((p, i) => (
             <div
               key={p.id}
-              style={{ position: 'absolute', inset: 0, display: i === active ? 'block' : 'none' }}
+              className="project-slide"
+              style={{ display: i === active ? 'block' : 'none' }}
             >
-              <ProjectPanel project={p} isActive={i === active} isDark={isDark} />
+              <ProjectPanel project={p} isActive={i === active} isDark={isDark} reducedMotion={reducedMotion} />
             </div>
           ))}
         </div>
@@ -603,9 +626,26 @@ export default function Projects() {
 
       <style>{`
         .project-panel { grid-template-columns: 1fr 1fr; }
+        .project-stage {
+          position: relative;
+          min-height: clamp(520px, 62vh, 680px);
+          overflow: hidden;
+        }
+        .project-slide {
+          position: absolute;
+          inset: 0;
+        }
         @media (max-width: 860px) {
           .project-panel { grid-template-columns: 1fr !important; }
           .project-panel > div:last-child { display: none; }
+          .project-stage {
+            min-height: 0;
+            overflow: visible;
+          }
+          .project-slide {
+            position: relative;
+            inset: auto;
+          }
         }
         @keyframes pulse-slow {
           0%, 100% { opacity: 0.6; }
