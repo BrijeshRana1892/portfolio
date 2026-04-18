@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { meta } from '@/lib/data';
 import Magnetic from './Magnetic';
+import ChatCompose from './ChatCompose';
 
 const ContactScene = dynamic(() => import('./three/ContactScene'), { ssr: false });
 
@@ -344,66 +345,87 @@ export default function Contact() {
           Open to Summer 2026 internships in software engineering, AI/ML, and agentic systems. Let&apos;s build something that moves the needle.
         </motion.p>
 
-        {/* Email CTA */}
+        {/* Chat-style compose widget — primary CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.75, duration: 0.6 }}
-          style={{ position: 'relative', marginBottom: '48px' }}
+          transition={{ delay: 0.7, duration: 0.7, ease: [0.33, 1, 0.68, 1] }}
+          style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '28px' }}
         >
-          <Magnetic strength={0.4} radius={120}>
+          <ChatCompose isDark={isDark} />
+        </motion.div>
+
+        {/* Secondary: direct email — small, subtle */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.85, duration: 0.5 }}
+          style={{
+            position: 'relative',
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            marginBottom: '32px',
+          }}
+        >
+          <span style={{
+            fontFamily: 'var(--font-body)', fontSize: '13px',
+            color: 'var(--text-muted)',
+          }}>
+            or reach me directly at
+          </span>
           <button
             onClick={handleCopy}
             style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'clamp(14px, 2.2vw, 22px)',
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              fontFamily: 'var(--font-mono)', fontSize: '13px',
               color: isDark ? 'rgba(240,240,245,0.85)' : 'var(--text)',
               background: 'transparent',
               border: 'none',
-              letterSpacing: '0.04em',
-              padding: '12px 8px',
-              borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'}`,
-              transition: 'color 0.3s ease, border-color 0.3s ease',
-              position: 'relative',
+              padding: '2px 4px',
+              borderBottom: `1px dashed ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+              cursor: 'pointer',
+              transition: 'color 0.25s ease, border-color 0.25s ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = 'var(--accent)';
-              e.currentTarget.style.borderColor = 'var(--accent)';
+              e.currentTarget.style.borderBottomColor = 'var(--accent)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = isDark ? 'rgba(240,240,245,0.85)' : 'var(--text)';
-              e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+              e.currentTarget.style.color = isDark ? 'rgba(240,240,245,0.85)' : '';
+              e.currentTarget.style.borderBottomColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)';
             }}
+            aria-label="Copy email address"
           >
             {meta.email}
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h4a2 2 0 002-2M8 5a2 2 0 012-2h4a2 2 0 012 2m4 3h2a2 2 0 012 2v4m-6 4h6" />
+            </svg>
           </button>
-          </Magnetic>
 
           {/* Copied toast */}
           <motion.div
             initial={false}
-            animate={copied ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ duration: 0.25 }}
+            animate={copied ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 6, scale: 0.95 }}
+            transition={{ duration: 0.22 }}
             style={{
               position: 'absolute',
-              top: 'calc(100% + 12px)',
+              top: 'calc(100% + 8px)',
               left: '50%', transform: 'translateX(-50%)',
-              display: 'flex', alignItems: 'center', gap: '8px',
-              padding: '8px 16px',
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '5px 11px',
               background: isDark ? 'rgba(14,14,26,0.95)' : '#fff',
               border: '1px solid rgba(0,255,136,0.3)',
-              borderRadius: '8px',
+              borderRadius: '7px',
               backdropFilter: 'blur(10px)',
               pointerEvents: 'none',
               whiteSpace: 'nowrap',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
             }}
           >
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#00ff88" strokeWidth={2.5}>
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#00ff88" strokeWidth={2.5}>
               <path d="M5 13l4 4L19 7" />
             </svg>
             <span style={{
-              fontFamily: 'var(--font-body)', fontSize: '13px',
+              fontFamily: 'var(--font-body)', fontSize: '11px',
               color: '#00ff88', fontWeight: 600,
             }}>
               Copied!

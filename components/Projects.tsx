@@ -354,6 +354,26 @@ function ProjectPanel({
               {/* CTA buttons */}
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <a
+                  href={`/projects/${project.slug}`}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '8px',
+                    padding: '10px 22px',
+                    background: project.color,
+                    border: `1px solid ${project.color}`,
+                    borderRadius: '7px',
+                    fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600,
+                    color: '#06060f', textDecoration: 'none', letterSpacing: '0.04em',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.filter = 'brightness(1)'; }}
+                >
+                  Read Case Study
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.4}>
+                    <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+                <a
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -561,17 +581,15 @@ export default function Projects() {
           </motion.div>
         </div>
 
-        {/* Project panel */}
+        {/* Project panel — renders only the active slide inline so height matches content */}
         <div className="project-stage">
-          {projects.map((p, i) => (
-            <div
-              key={p.id}
-              className="project-slide"
-              style={{ display: i === active ? 'block' : 'none' }}
-            >
-              <ProjectPanel project={p} isActive={i === active} isDark={isDark} reducedMotion={reducedMotion} />
-            </div>
-          ))}
+          <ProjectPanel
+            key={proj.id}
+            project={proj}
+            isActive
+            isDark={isDark}
+            reducedMotion={reducedMotion}
+          />
         </div>
 
         {/* Prev/Next arrows */}
@@ -628,24 +646,10 @@ export default function Projects() {
         .project-panel { grid-template-columns: 1fr 1fr; }
         .project-stage {
           position: relative;
-          min-height: clamp(520px, 62vh, 680px);
-          overflow: hidden;
-        }
-        .project-slide {
-          position: absolute;
-          inset: 0;
         }
         @media (max-width: 860px) {
           .project-panel { grid-template-columns: 1fr !important; }
           .project-panel > div:last-child { display: none; }
-          .project-stage {
-            min-height: 0;
-            overflow: visible;
-          }
-          .project-slide {
-            position: relative;
-            inset: auto;
-          }
         }
         @keyframes pulse-slow {
           0%, 100% { opacity: 0.6; }

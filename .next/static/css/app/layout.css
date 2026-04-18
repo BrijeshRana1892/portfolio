@@ -1096,6 +1096,9 @@ video {
 .inline-block {
   display: inline-block;
 }
+.inline {
+  display: inline;
+}
 .flex {
   display: flex;
 }
@@ -1126,6 +1129,9 @@ video {
 .tabular-nums {
   --tw-numeric-spacing: tabular-nums;
   font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
+}
+.outline {
+  outline-style: solid;
 }
 .\!ring {
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color) !important;
@@ -1209,19 +1215,37 @@ html.light {
   --border:     rgba(91, 76, 255, 0.08);
   --border-2:   rgba(91, 76, 255, 0.04);
 
-  /* Shadows — what makes light mode feel premium */
-  --shadow-sm:  0 1px 2px rgba(12, 11, 29, 0.04);
-  --shadow-md:  0 4px 12px rgba(12, 11, 29, 0.06);
-  --shadow-lg:  0 8px 30px rgba(12, 11, 29, 0.08);
+  /* Shadows — violet-tinted for premium feel (Linear-style) */
+  --shadow-sm:
+    0 1px 2px rgba(91, 76, 255, 0.06),
+    0 1px 1px rgba(12, 11, 29, 0.03);
+  --shadow-md:
+    0 4px 14px rgba(91, 76, 255, 0.10),
+    0 2px 6px rgba(8, 145, 178, 0.05),
+    0 1px 2px rgba(12, 11, 29, 0.04);
+  --shadow-lg:
+    0 12px 40px rgba(91, 76, 255, 0.14),
+    0 6px 16px rgba(8, 145, 178, 0.08),
+    0 2px 6px rgba(12, 11, 29, 0.06);
 
-  /* ── Gradient blobs on the html root ─────────────────
-     Sections are made transparent so this always shows  */
+  /* ── Aurora mesh gradient on the html root ────────────
+     Layered radial + conic tints. Sections are transparent
+     so this always shows through.                         */
   background-color: #f8f8fc;
   background-image:
-    radial-gradient(ellipse 620px 560px at 12% 18%, rgba(195, 170, 255, 0.42) 0%, transparent 68%),
-    radial-gradient(ellipse 520px 480px at 82% 28%, rgba(160, 220, 245, 0.32) 0%, transparent 68%),
-    radial-gradient(ellipse 440px 380px at 48% 85%, rgba(255, 190, 210, 0.26) 0%, transparent 68%);
-  animation: lightBlobDrift 30s ease-in-out infinite alternate;
+    radial-gradient(ellipse 720px 620px at 10% 12%, rgba(195, 170, 255, 0.55) 0%, transparent 62%),
+    radial-gradient(ellipse 560px 500px at 88% 24%, rgba(155, 220, 250, 0.48) 0%, transparent 62%),
+    radial-gradient(ellipse 520px 460px at 48% 92%, rgba(255, 190, 220, 0.42) 0%, transparent 62%),
+    radial-gradient(ellipse 400px 360px at 78% 72%, rgba(255, 215, 170, 0.32) 0%, transparent 65%),
+    conic-gradient(
+      from 210deg at 50% 50%,
+      rgba(195, 170, 255, 0.18) 0deg,
+      rgba(155, 220, 250, 0.12) 80deg,
+      rgba(255, 190, 220, 0.16) 160deg,
+      rgba(255, 215, 170, 0.10) 240deg,
+      rgba(195, 170, 255, 0.18) 360deg
+    );
+  animation: lightAuroraDrift 34s ease-in-out infinite alternate;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1336,7 +1360,7 @@ body::after {
   z-index: 9998;
   animation: grain 0.5s steps(3) infinite;
 }
-html.light body::after { opacity: 0.020; }
+html.light body::after { opacity: 0.040; }
 
 @keyframes grain {
   0%   { transform: translate(0,0); }
@@ -1345,11 +1369,19 @@ html.light body::after { opacity: 0.020; }
   75%  { transform: translate(-1%,4%); }
   100% { transform: translate(2%,-2%); }
 }
-@keyframes lightBlobDrift {
-  0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
-  33%  { background-position: 3% -2%, 97% 3%, 53% 97%; }
-  66%  { background-position: -2% 3%, 102% -2%, 47% 103%; }
-  100% { background-position: 1% 1%, 99% 1%, 51% 99%; }
+@keyframes lightAuroraDrift {
+  0% {
+    background-position: 0% 0%, 100% 0%, 50% 100%, 80% 60%, center;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 200% 200%;
+  }
+  50% {
+    background-position: 4% -3%, 96% 4%, 54% 96%, 76% 64%, center;
+    background-size: 110% 108%, 108% 110%, 112% 106%, 106% 112%, 220% 220%;
+  }
+  100% {
+    background-position: -2% 4%, 103% -3%, 47% 103%, 82% 56%, center;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 200% 200%;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════

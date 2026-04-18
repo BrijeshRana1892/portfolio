@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Inter, JetBrains_Mono } from 'next/font/google';
 import MagneticCursor from '@/components/MagneticCursor';
 import ScrollSkew from '@/components/ScrollSkew';
+import LightSpotlight from '@/components/LightSpotlight';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -88,6 +89,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://brijeshrana.dev',
   },
+
+  verification: {
+    // Paste the content value from Google Search Console when you verify
+    google: 'REPLACE_WITH_GOOGLE_VERIFICATION_TOKEN',
+  },
 };
 
 export const viewport: Viewport = {
@@ -100,6 +106,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* rel=me links for identity verification across platforms */}
+        <link rel="me" href="https://github.com/brijesh-tech" />
+        <link rel="me" href="https://www.linkedin.com/in/brijesh-tech/" />
+        <link rel="me" href="mailto:rbrijesh1892@gmail.com" />
+
         {/* Apply theme before first paint to avoid flash. Default: dark. Light only if user explicitly opted in. */}
         <script
           dangerouslySetInnerHTML={{
@@ -148,6 +159,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       >
         <MagneticCursor />
         <ScrollSkew />
+        <LightSpotlight />
         {children}
       </body>
     </html>

@@ -121,6 +121,38 @@ export const projects = [
     gradientTo: '#00d4ff',
     github: 'https://github.com/BrijeshRana1892',
     demo: null,
+    caseStudy: {
+      role: 'Solo build — full stack, ML pipeline, infra',
+      timeline: '8 weeks · 2024',
+      problem:
+        'Traditional AI code review tools treat every file in isolation. They flag syntax issues but miss the repository\'s conventions, miss how helper functions are actually used across modules, and miss the domain language of the codebase. Reviewers were getting noise — style nits that ignored the project\'s real idioms.',
+      approach: [
+        'Built a retrieval layer over each repository: chunk files on syntactic boundaries (functions, classes, blocks), embed with OpenAI ada-002, index in Pinecone.',
+        'On every review request, pull the diff, retrieve the top-K semantically related chunks from the repo, and pass them as context alongside the diff to GPT-4.',
+        'Added a Redis cache keyed by (file-hash, prompt-hash) so repeat reviews on the same commit skip the LLM call entirely.',
+        'Wrapped the GitHub webhook flow so reviews run automatically on every PR open and re-run on force-push.',
+      ],
+      architecture: [
+        { label: 'Frontend', value: 'React + Vite, GitHub OAuth for repo access' },
+        { label: 'API', value: 'Node.js + Express — PR webhooks, review orchestration' },
+        { label: 'Retrieval', value: 'LangChain pipeline, Pinecone vector store' },
+        { label: 'LLM', value: 'OpenAI GPT-4 with structured output for file-level suggestions' },
+        { label: 'Cache', value: 'Redis — cuts repeat-review latency by 60%+' },
+        { label: 'Infra', value: 'Docker Compose locally, deployable container per service' },
+      ],
+      challenges: [
+        'Token budget: large diffs blow past context windows. Solved by diff-chunking + ranking retrieved context by cosine similarity, dropping low-scoring chunks.',
+        'False positives on intentional patterns: the model kept flagging codebase-specific idioms. Fixed by including a conventions summary retrieved from the README + top-level docs in every prompt.',
+        'Webhook duplication: force-pushes triggered duplicate reviews. Added a request dedupe layer on (repo, PR, head-sha).',
+      ],
+      outcomes: [
+        'Review turnaround under 40 seconds on diffs up to ~400 LoC.',
+        'Cache layer reduced redundant LLM spend by 60% across repeat pushes on the same PR.',
+        'Shipped context-aware suggestions that explicitly referenced other files in the repo — the differentiator vs generic linters.',
+      ],
+      learnings:
+        'RAG quality lives and dies on the chunking strategy. My first pass chunked by fixed line count and retrieval quality was noisy; switching to AST-aware chunking made retrieved context dramatically more relevant. The second biggest win was the cache layer — it didn\'t just save money, it made the product feel snappy enough to use on every commit.',
+    },
   },
   {
     id: 2,
@@ -137,6 +169,7 @@ export const projects = [
     gradientTo: '#a855f7',
     github: 'https://github.com/brijesh-tech',
     demo: 'https://codetique-brown.vercel.app',
+    caseStudy: null,
   },
   {
     id: 3,
@@ -153,6 +186,7 @@ export const projects = [
     gradientTo: '#4ade80',
     github: 'https://github.com/BrijeshRana1892',
     demo: null,
+    caseStudy: null,
   },
   {
     id: 4,
@@ -169,6 +203,7 @@ export const projects = [
     gradientTo: '#fb923c',
     github: 'https://github.com/BrijeshRana1892',
     demo: 'https://flipbook.vercel.app',
+    caseStudy: null,
   },
 ];
 
