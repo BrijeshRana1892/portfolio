@@ -278,30 +278,7 @@ function ExpCardContent({
         </span>
       </div>
 
-      {/* Row 4: Bullet points */}
-      <ul style={{
-        listStyle: 'none', padding: 0, margin: '0 0 18px 0',
-        display: 'flex', flexDirection: 'column', gap: '9px',
-      }}>
-        {exp.bullets.map((bullet, i) => (
-          <li key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-            <span style={{
-              width: '5px', height: '5px', borderRadius: '50%',
-              background: exp.color, flexShrink: 0, marginTop: '7px',
-              boxShadow: `0 0 6px ${exp.color}80`,
-            }} />
-            <span style={{
-              fontFamily: 'var(--font-body)', fontSize: '13.5px',
-              color: isDark ? 'rgba(240,240,245,0.72)' : '#374151',
-              lineHeight: 1.65,
-            }}>
-              {bullet}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      {/* Row 5: Tech pills */}
+      {/* Tech pills */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: '6px',
         justifyContent: align === 'right' ? 'flex-end' : 'flex-start',

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { roles, tagline } from '@/lib/data';
 
@@ -207,6 +207,23 @@ export default function Hero() {
   const [mounted, setMounted] = useState(false);
   const isDark = useDarkMode();
   const mouse = useRef({ x: 0, y: 0 });
+  const heroRef = useRef<HTMLElement>(null);
+
+  // Scroll-linked transforms — progress 0 at top of hero, 1 when hero fully scrolled past
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // Content zooms out + fades + lifts — bigger numbers for visible effect
+  const contentScale = useTransform(scrollYProgress, [0, 0.85], [1, 0.76]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.35, 0.7], [1, 0.7, 0]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -140]);
+
+  // Blob parallax — stronger offsets
+  const blob1Y = useTransform(scrollYProgress, [0, 1], ['0%', '-70%']);
+  const blob2Y = useTransform(scrollYProgress, [0, 1], ['0%', '55%']);
+  const blob3Y = useTransform(scrollYProgress, [0, 1], ['0%', '-40%']);
 
   useEffect(() => {
     setMounted(true);
@@ -229,6 +246,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
+      ref={heroRef}
       style={{
         position: 'relative',
         minHeight: '100vh',
@@ -253,8 +271,8 @@ export default function Hero() {
           position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none', overflow: 'hidden',
         }}
       >
-        {/* Violet blob — bottom-left */}
-        <div style={{
+        {/* Violet blob — bottom-left (fastest parallax) */}
+        <motion.div style={{
           position: 'absolute',
           bottom: '-10%', left: '-8%',
           width: '55vw', height: '55vw',
@@ -264,9 +282,11 @@ export default function Hero() {
             : 'radial-gradient(circle, rgba(108,80,255,0.28) 0%, transparent 62%)',
           filter: 'blur(80px)',
           animation: 'drift-1 32s ease-in-out infinite',
+          y: blob1Y,
+          willChange: 'transform',
         }} />
-        {/* Cyan blob — top-right */}
-        <div style={{
+        {/* Cyan blob — top-right (reverse parallax) */}
+        <motion.div style={{
           position: 'absolute',
           top: '-5%', right: '5%',
           width: '40vw', height: '40vw',
@@ -276,10 +296,12 @@ export default function Hero() {
             : 'radial-gradient(circle, rgba(0,180,240,0.22) 0%, transparent 62%)',
           filter: 'blur(70px)',
           animation: 'drift-2 26s ease-in-out infinite',
+          y: blob2Y,
+          willChange: 'transform',
         }} />
         {/* Rose blob — center (light mode only) */}
         {!isDark && (
-          <div style={{
+          <motion.div style={{
             position: 'absolute',
             top: '55%', left: '55%',
             width: '32vw', height: '32vw',
@@ -287,6 +309,8 @@ export default function Hero() {
             background: 'radial-gradient(circle, rgba(255,150,180,0.18) 0%, transparent 62%)',
             filter: 'blur(60px)',
             animation: 'drift-3 38s ease-in-out infinite',
+            y: blob3Y,
+            willChange: 'transform',
           }} />
         )}
       </div>
@@ -315,13 +339,18 @@ export default function Hero() {
       )}
 
       {/* ── Main content layout ── */}
-      <div
+      <motion.div
         style={{
           position: 'relative', zIndex: 5,
           flex: 1,
           display: 'flex',
           alignItems: 'center',
           padding: '100px 0 60px',
+          scale: contentScale,
+          opacity: contentOpacity,
+          y: contentY,
+          transformOrigin: '50% 40%',
+          willChange: 'transform, opacity',
         }}
       >
         <div
@@ -372,7 +401,7 @@ export default function Hero() {
                 textTransform: 'uppercase',
                 color: isDark ? 'rgba(0,212,255,0.9)' : '#0891b2',
               }}>
-                Open to Summer 2026 Internships
+                Open to Full-Time SDE Roles
               </span>
             </motion.div>
 
@@ -544,7 +573,7 @@ export default function Hero() {
             )}
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Scroll indicator ── */}
       <motion.div

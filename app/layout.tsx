@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     siteName: 'Brijesh Rana',
     title: 'Brijesh Rana — Software Engineer & AI/ML Developer',
     description:
-      'Building agentic systems, full-stack apps, and intelligent software. MS CS @ CSULB 2026. Open to Summer 2026 internships.',
+      'Building agentic systems, full-stack apps, and intelligent software. MS CS @ CSULB 2026. Open to full-time SDE roles.',
   },
 
   twitter: {

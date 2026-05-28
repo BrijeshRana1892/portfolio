@@ -68,7 +68,7 @@ export default async function OpenGraphImage() {
               display: 'flex',
             }}
           >
-            Open to Summer 2026 Internships
+            Open to Full-Time SDE Roles
           </div>
         </div>
 

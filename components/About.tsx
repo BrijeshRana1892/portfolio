@@ -320,7 +320,7 @@ function BentoGrid({ isDark, inView }: { isDark: boolean; inView: boolean }) {
         <div style={{
           fontFamily: 'var(--font-body)', fontSize: '12px',
           color: 'var(--text-muted)', lineHeight: 1.55,
-        }}>Summer 2026<br />Internships</div>
+        }}>Full-Time<br />SDE Roles</div>
       </motion.div>
 
       {/* CARD 4 — Tech marquee */}

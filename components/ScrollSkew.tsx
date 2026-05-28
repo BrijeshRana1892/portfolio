@@ -17,9 +17,28 @@ export default function ScrollSkew() {
     let velocity = 0;
     let current = 0;
     let rafId = 0;
+    let idle = true;
+    let lastApplied = 0;
 
     const MAX_SKEW = 4;
     const SENSITIVITY = 0.018;
+
+    // Cache nodes once on mount — refresh on mutations via observer
+    let nodes: HTMLElement[] = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-scroll-skew]')
+    );
+    const mo = new MutationObserver(() => {
+      nodes = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-scroll-skew]')
+      );
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    const startLoop = () => {
+      if (!idle) return;
+      idle = false;
+      rafId = requestAnimationFrame(tick);
+    };
 
     const onScroll = () => {
       const now = performance.now();
@@ -28,6 +47,7 @@ export default function ScrollSkew() {
       velocity = dy / dt;
       lastY = window.scrollY;
       lastT = now;
+      startLoop();
     };
 
     const tick = () => {
@@ -39,23 +59,32 @@ export default function ScrollSkew() {
       velocity *= 0.88;
 
       const value = Math.abs(current) < 0.04 ? 0 : current;
-      const nodes = document.querySelectorAll<HTMLElement>('[data-scroll-skew]');
-      nodes.forEach((n) => {
-        n.style.transform = value === 0 ? '' : `skewY(${value}deg)`;
-      });
+
+      // Only write if value changed meaningfully — saves layout thrash
+      if (Math.abs(value - lastApplied) > 0.03 || (value === 0 && lastApplied !== 0)) {
+        const transform = value === 0 ? '' : `skewY(${value}deg)`;
+        for (let i = 0; i < nodes.length; i++) {
+          nodes[i].style.transform = transform;
+        }
+        lastApplied = value;
+      }
+
+      // Stop RAF when settled
+      if (Math.abs(velocity) < 0.001 && value === 0) {
+        idle = true;
+        return;
+      }
 
       rafId = requestAnimationFrame(tick);
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    rafId = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(rafId);
+      mo.disconnect();
       window.removeEventListener('scroll', onScroll);
-      document.querySelectorAll<HTMLElement>('[data-scroll-skew]').forEach((n) => {
-        n.style.transform = '';
-      });
+      nodes.forEach((n) => { n.style.transform = ''; });
     };
   }, []);
 

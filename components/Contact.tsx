@@ -342,7 +342,7 @@ export default function Contact() {
             marginBottom: '56px',
           }}
         >
-          Open to Summer 2026 internships in software engineering, AI/ML, and agentic systems. Let&apos;s build something that moves the needle.
+          Open to full-time SDE roles in software engineering, AI/ML, and agentic systems. Let&apos;s build something that moves the needle.
         </motion.p>
 
         {/* Chat-style compose widget — primary CTA */}
@@ -516,7 +516,14 @@ export default function Contact() {
         whiteSpace: 'nowrap',
         textAlign: 'center',
       }}>
-        Designed & built by Brijesh Rana · {new Date().getFullYear()}
+        Designed & built by{' '}
+        <span style={{
+          color: 'transparent',
+          backgroundImage: 'linear-gradient(90deg, #6c63ff, #00d4ff)',
+          WebkitBackgroundClip: 'text',
+          backgroundClip: 'text',
+          fontWeight: 600,
+        }}>Brijesh Rana</span> · {new Date().getFullYear()}
       </div>
 
       <style>{`

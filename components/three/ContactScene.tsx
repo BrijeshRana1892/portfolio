@@ -4,6 +4,7 @@
 
 import { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useInViewFrameloop } from '@/lib/useInViewFrameloop';
 import * as THREE from 'three';
 
 // ── Central wireframe icosahedron core ────────────────────────
@@ -321,14 +322,18 @@ export default function ContactScene({
   isDark: boolean;
   mouse: React.MutableRefObject<{ x: number; y: number }>;
 }) {
+  const { ref, frameloop } = useInViewFrameloop();
   return (
-    <Canvas
-      camera={{ position: [0, 0, 6.5], fov: 45 }}
-      dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 2)]}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-      style={{ width: '100%', height: '100%', background: 'transparent' }}
-    >
-      <Scene isDark={isDark} mouse={mouse} />
-    </Canvas>
+    <div ref={ref} style={{ width: '100%', height: '100%' }}>
+      <Canvas
+        frameloop={frameloop}
+        camera={{ position: [0, 0, 6.5], fov: 45 }}
+        dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 2)]}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        style={{ width: '100%', height: '100%', background: 'transparent' }}
+      >
+        <Scene isDark={isDark} mouse={mouse} />
+      </Canvas>
+    </div>
   );
 }

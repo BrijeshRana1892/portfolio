@@ -11,7 +11,7 @@ export const meta = {
   github: 'https://github.com/BrijeshRana1892',
   linkedin: 'https://www.linkedin.com/in/brijesh-tech/',
   location: 'Long Beach, CA',
-  status: 'Available for Summer 2026 Internship',
+  status: 'Open to Full-Time SDE Roles',
 };
 
 export const roles = [
@@ -215,12 +215,6 @@ export const experiences = [
     location: 'Long Beach, CA',
     period: 'May 2025 — Present',
     color: '#00d4ff',
-    bullets: [
-      'Designed and built a scalable file storage microservice using Node.js and AWS S3, handling document uploads, caching, and delivery for 10K+ campus users while cutting external hosting costs.',
-      'Built a Python-based monitoring dashboard to track system queries and surface usage patterns across 1K+ sessions, helping teams troubleshoot bottlenecks and resolve production issues faster.',
-      'Developed a retrieval-augmented Q&A pipeline using Python and LangChain to automate information lookup from institutional knowledge bases, improving response accuracy for student-facing support teams.',
-      'Integrated GenAI-powered LLM APIs into internal campus tools to automate document summarization and data retrieval, writing clean, maintainable code with technical documentation for each module.',
-    ],
     tech: ['Node.js', 'AWS S3', 'Python', 'LangChain', 'GenAI', 'LLMs'],
   },
   {
@@ -229,12 +223,6 @@ export const experiences = [
     location: 'Surat, India',
     period: 'Jun 2023 — Jan 2025',
     color: '#6c63ff',
-    bullets: [
-      'Developed 10+ production backend services in Java and Spring Boot with PostgreSQL, following object-oriented design patterns for order management and authentication, used daily by 3+ client teams.',
-      'Built CI/CD pipelines with automated tests and deployment gates, participating in code reviews across the SDLC, shortening feedback cycles from 2 days to same-day merges.',
-      'Designed fault-tolerant file processing services on AWS with structured logging and configurable retries, running performance analysis on distributed batch workflows to achieve 99.2% job completion reliability.',
-      'Wrote and maintained unit tests across shared service modules, collaborating with cross-functional teams in an Agile environment to reduce regression defects and ensure code quality.',
-    ],
     tech: ['Java', 'Spring Boot', 'PostgreSQL', 'AWS', 'CI/CD', 'Docker'],
   },
   {
@@ -243,10 +231,6 @@ export const experiences = [
     location: 'Ahmedabad, India',
     period: 'Dec 2022 — May 2023',
     color: '#a855f7',
-    bullets: [
-      'Improved a C-based log parser on Linux by diagnosing and troubleshooting 8+ edge cases, adding unit tests for each fix and enabling faster crash reproduction, cutting intermittent failure debug time.',
-      'Automated data validation using Python and shell scripts to compare file headers, row counts, and data integrity checks, reducing nightly verification time by 40 minutes for the analytics team.',
-    ],
     tech: ['C', 'Python', 'Shell Scripting', 'Linux', 'Unit Testing'],
   },
 ];

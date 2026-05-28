@@ -4,6 +4,7 @@
 
 import { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { useInViewFrameloop } from '@/lib/useInViewFrameloop';
 import * as THREE from 'three';
 
 // ────────────────────────────────────────────────────────────────
@@ -332,14 +333,18 @@ export default function HeroScene({
   isDark: boolean;
   mouse: React.MutableRefObject<{ x: number; y: number }>;
 }) {
+  const { ref, frameloop } = useInViewFrameloop();
   return (
-    <Canvas
-      camera={{ position: [0, 0, 8], fov: 60 }}
-      dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 2)]}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-    >
-      <Scene isDark={isDark} mouse={mouse} />
-    </Canvas>
+    <div ref={ref} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+      <Canvas
+        frameloop={frameloop}
+        camera={{ position: [0, 0, 8], fov: 60 }}
+        dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 2)]}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <Scene isDark={isDark} mouse={mouse} />
+      </Canvas>
+    </div>
   );
 }
